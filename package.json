@@ -1,0 +1,26 @@
+{
+  "name": "tv-interface",
+  "version": "1.0.1",
+  "description": "A simple interface for working with TrueVault",
+  "main": "tvInterface.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fusiform/tv-interface.git"
+  },
+  "keywords": [
+    "TrueVault",
+    "Interface"
+  ],
+  "author": "Alex Mathews <alex.mathews@fusiform.co> (http://alexjmathews.github.io)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fusiform/tv-interface/issues"
+  },
+  "homepage": "https://github.com/fusiform/tv-interface#readme",
+  "dependencies": {
+    "request": "^2.72.0"
+  }
+}
