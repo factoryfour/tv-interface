@@ -42,30 +42,79 @@ var organization = {
 //     tvInterface.addOrgPatientSchema(organization, function(error, organization) {
 //       if (error) throw error;
 //       console.log(organization)
+//       tvInterface.pushOrgDocument(organization, function(error, success) {
 //
+//         console.log(success)
+//         tvInterface.searchForOrgByName("Fusiform", function(error, results) {
+//           console.log("found the organiztion")
+//           console.log(results)
+//         });
+//       });
 //     });
 //   });
 // });
 
-var organization_test = {
-  name: 'Fusiform',
-  id: org_id,
-  vault: 'asaass2123123',
-  patient_schema: 'asaass2123123',
-  group_policy: 'asaass2123123',
-  is_vendor: false,
-  is_active: true,
-  admins: [],
-  users: []
-}
-
-
-// tvInterface.pushOrgDocument(organization_test, function(error, organization) {
+// tvInterface.searchForOrgByID("cc93ee0e-21c1-4ad0-bc2b-f2a11a54ec32", function(error, results) {
+//   if (error) {
+//     throw error;
+//   }
+//   console.log("found the organiztion");
+//   if (results > 0) {
+//     throw Error("There was more than one result. WAT");
+//   }
+//   var org = JSON.parse(new Buffer(results[0].document, 'base64').toString('ascii'));
+//   console.log(org)
 //
-//   console.log(organization)
+//   var patient = {
+//     first_name: "Alex",
+//     last_name: "Mathews",
+//     clinic_id: "00001",
+//     dob:"04/11/1994",
+//     email:"alexjmathews",
+//     phone:"7148516800",
+//     address:"4090 Santa Anita Ln, Yorba Linda, CA 92886",
+//     owner_id:"hello",
+//     height:"67",
+//     weight:"130",
+//     notes:"",
+//     needs_attention:false,
+//     orders:"[]",
+//     media:"[]"
+//   }
+//
+//
+//   tvInterface.createPatient(org, patient, function(error, result) {
+//     if(error) {
+//       throw error;
+//     }
+//     console.log(result);
+//   });
+// });
+//
+
+// tvInterface.allDocuments("8ab5a786-cc69-4197-931f-8cbc32efee49", function(error, results) {
+//   console.log("found all the docs")
+//   console.log(results)
+//   // for (i = 0; i < results.length; i++) {
+//   //   console.log(JSON.parse(new Buffer(results[i].document, 'base64').toString('ascii')))
+//   // }
 // });
 
-tvInterface.searchForOrgByName("Fusiform", function(error, organization) {
+tvInterface.searchForOrgByID("cc93ee0e-21c1-4ad0-bc2b-f2a11a54ec32", function(error, results) {
+  if (error) {
+    throw error;
+  }
+  console.log("found the organiztion");
+  if (results > 0) {
+    throw Error("There was more than one result. WAT");
+  }
+  var org = JSON.parse(new Buffer(results[0].document, 'base64').toString('ascii'));
+  console.log(org)
+  tvInterface.getPatients(org, function(error, results) {
+    if (error) {
+      throw error;
+    }
+    console.log(results);
+  });
 
-  console.log(organization)
 });
