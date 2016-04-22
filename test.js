@@ -1,15 +1,17 @@
 var uuid = require('uuid');
 
 var config = require('./config.js')
-var TV_API_KEY = config.TV_API_KEY;
-var TV_ACCOUNT_ID = config.TV_ACCOUNT_ID;
+
+var TV_ACCOUNT_ID     = config.TV_ACCOUNT_ID;
 var TV_ADMIN_VAULT_ID = config.TV_ADMIN_VAULT_ID;
+var TV_ORG_SCHEMA_ID  = config.TV_ORG_SCHEMA_ID
+var TV_API_KEY        = config.TV_API_KEY;
+
 var TV_API_KEY_ENC = new Buffer(TV_API_KEY + ":").toString('base64');
 var TV_AUTH_HEADER = "Basic " + TV_API_KEY_ENC;
-var TV_ORG_SCHEMA_ID = "5ab34eec-b33b-4f6b-a549-0e3c9c54c383"
 
 var request = require('request');
-var tvInterface = require('./tvinterface.js')(TV_API_KEY, TV_ACCOUNT_ID, TV_ADMIN_VAULT_ID);
+var tvInterface = require('./tvinterface.js')(config);
 
 
 var org_id = uuid.v4()
@@ -62,3 +64,8 @@ var organization_test = {
 //
 //   console.log(organization)
 // });
+
+tvInterface.searchForOrgByName("Fusiform", function(error, organization) {
+
+  console.log(organization)
+});
