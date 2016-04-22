@@ -176,6 +176,74 @@ module.exports = function(TV_API_KEY, TV_ACCOUNT_ID, TV_ADMIN_VAULT_ID) {
   tvModule.pushOrgDocument = function(organization, callback) {
     return callback(null, "hello world");
   }
+  tvModule.pushOrgSchema = function(callback) {
+    var org_schema = {
+      name: "organization",
+      fields: [{
+        name: "name",
+        index: true,
+        type: "string"
+      }, {
+        name: "id",
+        index: true,
+        type: "string"
+      }, {
+        name: "vault",
+        index: true,
+        type: "string"
+      }, {
+        name: "patient_schema",
+        index: true,
+        type: "string"
+      }, {
+        name: "group_policy",
+        index: true,
+        type: "string"
+      }, {
+        name: "is_vendor",
+        index: true,
+        type: "boolean"
+      }, {
+        name: "is_active",
+        index: true,
+        type: "boolean"
+      }, {
+        name: "admins",
+        index: true,
+        type: "string"
+      }, {
+        name: "users",
+        index: true,
+        type: "string"
+      }]
+    }
+
+    var org_schema_enc = new Buffer(JSON.stringify(org_schema)).toString('base64');
+
+    var orgSchemaCreateOptions = {
+      method: 'POST',
+      url: 'https://api.truevault.com/v1/vaults/' + TV_ADMIN_VAULT_ID + '/schemas',
+      headers: {
+        authorization: TV_AUTH_HEADER
+      },
+      formData: {
+        schema: org_schema_enc
+      }
+    };
+
+    request(orgSchemaCreateOptions, function(error, response, schemaCreatedBody) {
+      if (error) return callback(Error(error));
+      var schemaCreatedBodyParsed = JSON.parse(schemaCreatedBody);
+      console.log(schemaCreatedBodyParsed)
+      if (schemaCreatedBodyParsed.error) {
+        return callback(Error(schemaCreatedBodyParsed.error.message))
+      }
+      var schema_id = schemaCreatedBodyParsed.schema.id;
+      // console.log("Created group policy named " + policyCreatedParsed.group.name +" with ID " + group_policy_id);
+      return callback(null)
+    });
+  }
+
 
   tvModule.test = function() {
     return "hello world";
