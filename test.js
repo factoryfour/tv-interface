@@ -1,8 +1,13 @@
 var uuid = require('uuid');
 
-var TV_API_KEY = "b99c56f7-efad-4d44-a513-fec0036fee4b";
-var TV_ACCOUNT_ID = "0660656f-04c6-408f-a0f0-b8824333798b";
-var TV_ADMIN_VAULT_ID = "567753ae-6f80-4d63-941d-53e5701d365a"
+var TV_API_KEY = process.env.TV_API_KEY;
+var TV_ACCOUNT_ID = process.env.TV_ACCOUNT_ID;
+var TV_ADMIN_VAULT_ID = process.env.TV_ADMIN_VAULT_ID;
+var TV_API_KEY_ENC = new Buffer(TV_API_KEY + ":").toString('base64');
+var TV_AUTH_HEADER = "Basic " + TV_API_KEY_ENC;
+var TV_ORG_SCHEMA_ID = "5ab34eec-b33b-4f6b-a549-0e3c9c54c383"
+
+var request = require('request');
 var tvInterface = require('./tvinterface.js')(TV_API_KEY, TV_ACCOUNT_ID, TV_ADMIN_VAULT_ID);
 
 
@@ -18,6 +23,12 @@ var organization = {
   admins: [],
   users: []
 }
+
+
+// tvInterface.pushOrgSchema(function(error) {
+//   if (error) throw error;
+//   console.log("success");
+// })
 
 // tvInterface.createOrganizationVault(organization, function(error, organization) {
 //   if (error) throw error;
@@ -45,7 +56,7 @@ var organization_test = {
   users: []
 }
 
-tvInterface.pushOrgDocument(organization_test, function(error, organization){
-
-  console.log(organization)
-});
+// tvInterface.pushOrgDocument(organization_test, function(error, organization) {
+//
+//   console.log(organization)
+// });
