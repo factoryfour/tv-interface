@@ -1,12 +1,17 @@
 var request = require('request')
 
-module.exports = function(TV_API_KEY, TV_ACCOUNT_ID, TV_ADMIN_VAULT_ID) {
-  var TV_API_KEY_ENC = new Buffer(TV_API_KEY + ":").toString('base64');
-  var TV_AUTH_HEADER = "Basic " + TV_API_KEY_ENC;
+module.exports = function(config) {
+  var TV_API_KEY = config.TV_API_KEY;
+  var TV_ACCOUNT_ID = config.TV_ACCOUNT_ID;
+  var TV_ADMIN_VAULT_ID = config.TV_ADMIN_VAULT_ID;
 
-  if (!TV_API_KEY || !TV_ACCOUNT_ID) {
-    throw Error("001-TV Interface must be instantiated with an API Key and Accout ID.")
+
+  if (!config.TV_API_KEY || !config.TV_ACCOUNT_ID || !config.TV_ADMIN_VAULT_ID) {
+    throw Error("001-TV Interface must be instantiated with an API Key, Account ID, Admin Vault ID, Org Schema ID.")
   }
+
+  var TV_API_KEY_ENC = new Buffer(config.TV_API_KEY + ":").toString('base64');
+  var TV_AUTH_HEADER = "Basic " + TV_API_KEY_ENC;
 
   var tvModule = {};
 
@@ -174,9 +179,35 @@ module.exports = function(TV_API_KEY, TV_ACCOUNT_ID, TV_ADMIN_VAULT_ID) {
   };
 
   tvModule.pushOrgDocument = function(organization, callback) {
-    return callback(null, "hello world");
+    var request = require("request");
+    console.log(organization)
+    var org_enc = new Buffer(JSON.stringify(organization)).toString('base64');
+    console.log(org_enc)
+    console.log(config.TV_ORG_SCHEMA_ID)
+    var options = {
+      method: 'POST',
+      url: 'https://api.truevault.com/v1/vaults/' + TV_ADMIN_VAULT_ID + '/documents',
+      headers: {
+        authorization: TV_AUTH_HEADER
+      },
+      formData: {
+        document: org_enc,
+        schema_id: config.TV_ORG_SCHEMA_ID
+      }
+    };
+
+    request(options, function(error, response, orgPushedBody) {
+      if (error) return callback(error, null);
+      var orgPushedBodyParsed = JSON.parse(orgPushedBody);
+      console.log(orgPushedBodyParsed)
+      if (orgPushedBodyParsed.error) {
+        return callback(Error(orgPushedBodyParsed.error.message))
+      }
+      return callback(null, "Success");
+    });
+
   }
-  
+
   tvModule.pushOrgSchema = function(callback) {
     var org_schema = {
       name: "organization",
@@ -245,7 +276,47 @@ module.exports = function(TV_API_KEY, TV_ACCOUNT_ID, TV_ADMIN_VAULT_ID) {
     });
   }
 
+  tvModule.searchForOrgByName = function(name, callback) {
+    var search_option = {
+      filter: {
+        name: {
+          type: "eq",
+          value: name,
+          case_sensitive: false
+        }
+      },
+      full_document: true,
+      page: 1,
+      per_page: 3,
+      schema_id: config.TV_ORG_SCHEMA_ID
+    }
 
+    var search_option_enc = new Buffer(JSON.stringify(search_option)).toString('base64')
+
+    var options = {
+      method: 'POST',
+      url: 'https://api.truevault.com/v1/vaults/' + config.TV_ADMIN_VAULT_ID+ '/search',
+      headers: {
+        authorization: TV_AUTH_HEADER
+      },
+      formData: {
+        search_option: search_option_enc
+      }
+    };
+
+    request(options, function(error, response, searchBody) {
+      if (error) return callback(Error(error));
+      var searchBodyParsed = JSON.parse(searchBody);
+      console.log(searchBodyParsed)
+      if (searchBodyParsed.error) {
+        return callback(Error(searchBodyParsed.error.message))
+      }
+
+      return callback(null, searchBodyParsed)
+    });
+
+
+  }
   tvModule.test = function() {
     return "hello world";
   }
