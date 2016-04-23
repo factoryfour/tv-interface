@@ -170,7 +170,7 @@ module.exports = function(config) {
         request(patientSchemaCreateOptions, function(error, response, schemaCreatedBody) {
             if (error) return callback(Error(error), null);
             var schemaCreatedBodyParsed = JSON.parse(schemaCreatedBody);
-            console.log(schemaCreatedBodyParsed)
+            // console.log(schemaCreatedBodyParsed)
             var schema_id = schemaCreatedBodyParsed.schema.id;
             organization.patient_schema = schema_id;
             // console.log("Created group policy named " + policyCreatedParsed.group.name +" with ID " + group_policy_id);
@@ -180,10 +180,10 @@ module.exports = function(config) {
 
     tvModule.pushOrgDocument = function(organization, callback) {
         var request = require("request");
-        console.log(organization)
+        // console.log(organization)
         var org_enc = new Buffer(JSON.stringify(organization)).toString('base64');
-        console.log(org_enc)
-        console.log(config.TV_ORG_SCHEMA_ID)
+        // console.log(org_enc)
+        // console.log(config.TV_ORG_SCHEMA_ID)
         var options = {
             method: 'POST',
             url: 'https://api.truevault.com/v1/vaults/' + TV_ADMIN_VAULT_ID + '/documents',
@@ -199,7 +199,7 @@ module.exports = function(config) {
         request(options, function(error, response, orgPushedBody) {
             if (error) return callback(error, null);
             var orgPushedBodyParsed = JSON.parse(orgPushedBody);
-            console.log(orgPushedBodyParsed)
+            // console.log(orgPushedBodyParsed)
             if (orgPushedBodyParsed.error) {
                 return callback(Error(orgPushedBodyParsed.error.message))
             }
@@ -266,7 +266,7 @@ module.exports = function(config) {
         request(orgSchemaCreateOptions, function(error, response, schemaCreatedBody) {
             if (error) return callback(Error(error));
             var schemaCreatedBodyParsed = JSON.parse(schemaCreatedBody);
-            console.log(schemaCreatedBodyParsed)
+            // console.log(schemaCreatedBodyParsed)
             if (schemaCreatedBodyParsed.error) {
                 return callback(Error(schemaCreatedBodyParsed.error.message))
             }
@@ -350,7 +350,7 @@ module.exports = function(config) {
         request(orgSchemaCreateOptions, function(error, response, schemaCreatedBody) {
             if (error) return callback(Error(error));
             var schemaCreatedBodyParsed = JSON.parse(schemaCreatedBody);
-            console.log(schemaCreatedBodyParsed)
+            // console.log(schemaCreatedBodyParsed)
             if (schemaCreatedBodyParsed.error) {
                 return callback(Error(schemaCreatedBodyParsed.error.message))
             }
@@ -391,7 +391,7 @@ module.exports = function(config) {
         request(options, function(error, response, searchBody) {
             if (error) return callback(Error(error));
             var searchBodyParsed = JSON.parse(searchBody);
-            console.log(searchBodyParsed.data.info.total_result_count)
+            // console.log(searchBodyParsed.data.info.total_result_count)
             if (searchBodyParsed.data.info.total_result_count ==0) {
                 return callback(Error("Organization does not exist"), null);
             }
