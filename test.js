@@ -28,10 +28,10 @@ var organization = {
 }
 
 
-// tvInterface.pushOrgSchema(function(error) {
-//   if (error) throw error;
-//   console.log("success");
-// })
+tvInterface.updateOrgSchema(function(error) {
+  if (error) throw error;
+  console.log("success");
+})
 
 // tvInterface.createOrganizationVault(organization, function(error, organization) {
 //   if (error) throw error;
@@ -100,21 +100,21 @@ var organization = {
 //   // }
 // });
 
-tvInterface.searchForOrgByID("cc93ee0e-21c1-4ad0-bc2b-f2a11a54ec32", function(error, results) {
-  if (error) {
-    throw error;
-  }
-  console.log("found the organiztion");
-  if (results > 0) {
-    throw Error("There was more than one result. WAT");
-  }
-  var org = JSON.parse(new Buffer(results[0].document, 'base64').toString('ascii'));
-  console.log(org)
-  tvInterface.getPatients(org, function(error, results) {
-    if (error) {
-      throw error;
-    }
-    console.log(results);
-  });
-
-});
+// tvInterface.searchForOrgByID("cc93ee0e-21c1-4ad0-bc2b-f2a11a54ec32", function(error, results) {
+//   if (error) {
+//     throw error;
+//   }
+//   console.log("found the organiztion");
+//   if (results > 0) {
+//     throw Error("There was more than one result. WAT");
+//   }
+//   var org = JSON.parse(new Buffer(results[0].document, 'base64').toString('ascii'));
+//   console.log(org)
+//   tvInterface.getPatients(org, function(error, results) {
+//     if (error) {
+//       throw error;
+//     }
+//     console.log(results);
+//   });
+//
+// });
