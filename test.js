@@ -17,7 +17,7 @@ var tvInterface = require('./tvinterface.js')(config);
 var org_id = uuid.v4()
 var organization = {
   name: 'Fusiform',
-  id: org_id,
+  id: "1c98b49f-64fa-4aa5-9f43-35fb090958d2",
   vault: '',
   patient_schema: '',
   group_policy: '',
@@ -123,6 +123,15 @@ var organization = {
 //
 // });
 
-    tvInterface.uniqueUsername("s.demo@me.com", function(error, results) {
-        console.log(results)
+    // tvInterface.uniqueUsername("s.demo@me.com", function(error, results) {
+    //     console.log(results)
+    // });
+
+var user_id = "d859b353-8368-4aa7-b73e-4f01bf2df679"
+
+tvInterface.searchForOrgByID("1c98b49f-64fa-4aa5-9f43-35fb090958d2", function(error, organization){
+    tvInterface.addUserToOrganization(organization, user_id, function(error, success){
+    console.log(error);
+    console.log(success);
     });
+});

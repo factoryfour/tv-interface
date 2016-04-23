@@ -391,12 +391,20 @@ module.exports = function(config) {
         request(options, function(error, response, searchBody) {
             if (error) return callback(Error(error));
             var searchBodyParsed = JSON.parse(searchBody);
-            // console.log(searchBodyParsed)
+            console.log(searchBodyParsed.data.info.total_result_count)
+            if (searchBodyParsed.data.info.total_result_count ==0) {
+                return callback(Error("Organization does not exist"), null);
+            }
+            if (searchBodyParsed.data.info.total_result_count > 1) {
+                return callback(Error("Strange behavior, multiple org documents"), null);
+            }
             if (searchBodyParsed.error) {
                 return callback(Error(searchBodyParsed.error.message))
             }
 
-            return callback(null, searchBodyParsed.data.documents)
+            var doc = searchBodyParsed.data.documents[0].document;
+            var doc_dec = JSON.parse(new Buffer(doc, 'base64').toString('ascii'))
+            return callback(null,doc_dec )
         });
 
 
@@ -451,6 +459,28 @@ module.exports = function(config) {
         });
     }
 
+    tvModule.addUserToOrganization = function(organization, user_id, callback) {
+        var options = {
+            method: 'PUT',
+            url: 'https://api.truevault.com/v1/groups/' + organization.group_policy,
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
+                user_ids: user_id
+            }
+        };
+
+        request(options, function(error, response, body) {
+            if (error) return callback(Error(error), false);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), false)
+            }
+
+            return callback(null, true)
+        });
+    }
 
     tvModule.getPatients = function(organization, callback) {
         var search_option = {
