@@ -492,6 +492,45 @@ module.exports = function(config) {
         });
     }
 
+    tvModule.uniqueUsername = function(email, callback ) {
+        var optionsAlt = {
+            "filter": {
+                "$tv.username": {
+                    "type": "eq",
+                    "value": email,
+                    "case_sensitive": false
+                },
+                "$tv.status": {
+                    "type": "eq",
+                    "value": "ACTIVATED"
+                }
+            },
+            "filter_type": "and",
+            "full_document": true
+        };
+        var search_query = new Buffer(JSON.stringify(optionsAlt)).toString('base64');
+
+        request.post({
+            url: 'https://api.truevault.com/v1/users/search',
+            headers: {
+                'Authorization': TV_AUTH_HEADER
+            },
+            form: {
+                search_option: search_query
+            }
+        }, function(error, response, body) {
+            if (error) return callback(Error(error));
+            var bodyParsed = JSON.parse(body);
+            // console.log(searchBodyParsed)
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message))
+            }
+            if (bodyParsed.data.info.total_result_count > 0) {
+                return callback(null,false);
+            }
+            return callback(null, true)
+        });
+    }
 
     tvModule.test = function() {
         return "hello world";

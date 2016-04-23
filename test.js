@@ -24,14 +24,18 @@ var organization = {
   is_vendor: false,
   is_active: true,
   admins: [],
-  users: []
+  users: [],
+  org_street:"3201 saint paul ",
+  org_city:"Baltimore",
+  org_state:"Maryland",
+  org_zip:"21218"
 }
 
 
-tvInterface.updateOrgSchema(function(error) {
-  if (error) throw error;
-  console.log("success");
-})
+// tvInterface.updateOrgSchema(function(error) {
+//   if (error) throw error;
+//   console.log("success");
+// })
 
 // tvInterface.createOrganizationVault(organization, function(error, organization) {
 //   if (error) throw error;
@@ -118,3 +122,7 @@ tvInterface.updateOrgSchema(function(error) {
 //   });
 //
 // });
+
+    tvInterface.uniqueUsername("s.demo@me.com", function(error, results) {
+        console.log(results)
+    });
