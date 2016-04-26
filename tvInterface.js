@@ -537,27 +537,28 @@ module.exports = function(config) {
         var doc_enc = new Buffer(JSON.stringify(patient)).toString('base64')
 
         var options = {
-            method: 'GET',
+            method: 'PUT',
             url: 'https://api.truevault.com/v1/vaults/' + organization.vault + '/documents/' + doc_id,
             headers: {
                 authorization: header
             }
-            // ,
-            // formData: {
-            //     document: doc_enc
-            // }
+            ,
+            formData: {
+                document: doc_enc
+            }
         };
 
         request(options, function(error, response, searchBody) {
             if (error) return callback(Error(error));
-            var searchBodyParsed = JSON.parse(searchBody);
-            if (searchBodyParsed.error) {
-                return callback(Error(searchBodyParsed.error.message))
-            }
+            console.log(searchBody)
+            // var searchBodyParsed = JSON.parse(new Buffer(searchBody, 'base64').toString('ascii'));
+            // if (searchBodyParsed.error) {
+            //     return callback(Error(searchBodyParsed.error.message))
+            // }
 
-            var doc = searchBodyParsed.data.documents;
+            // var doc = searchBodyParsed.data.documents;
             // var doc_dec = JSON.parse(new Buffer(doc, 'base64').toString('ascii'))
-            return callback(null, doc)
+            return callback(null, searchBody)
         });
     }
 
@@ -609,7 +610,8 @@ module.exports = function(config) {
         });
     };
 
-    tvModule.createPatient = function(organization, patient, callback) {
+    tvModule.createPatient = function(organization, callback) {
+        var patient = {};
         var patient_enc = new Buffer(JSON.stringify(patient)).toString('base64');
 
         var options = {
@@ -630,8 +632,7 @@ module.exports = function(config) {
             if (bodyParsed.error) {
                 return callback(Error(bodyParsed.error.message))
             }
-
-            return callback(null, bodyParsed)
+            return callback(null, bodyParsed.document_id)
         });
     };
 

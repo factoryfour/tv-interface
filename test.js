@@ -29,15 +29,23 @@ var org_doc = {
     org_zip: '21218',
     admin: '[dad51e97-7d1a-4dd1-a77b-d57518d3fefa]'
 }
-// console.log(org_doc.name);
-var patient = {
-}
-// tvInterface.createPatient(org_doc, patient, function(error, result) {
-//     if (error) {
-//         throw error;
-//     }
-//     console.log(result);
-// })
+
+tvInterface.createPatient(org_doc, function(error, document_id) {
+    if (error) {
+        throw error;
+    }
+    var patient = {
+       first_name:"Alex",
+       last_name:"Mathews",
+       needs_attention:true
+   }
+   tvInterface.tokenUpdatePatient(org_doc, token, document_id, patient, function(error, result){
+       if (error){
+           throw error;
+       }
+       console.log(result)
+   });
+})
 
 // tvInterface.updateOrgGroupPolicy(org_doc, function(error, result){
 //         if (error) {
@@ -47,23 +55,24 @@ var patient = {
 // });
 
 var token = ".eJwljcsOgjAQAP-lV91k-9qWnv0ED3IiC9smxKBE4IDGf7fqdTKTeal1nPKy8jSrpAxqAnRg_FlTspSwOSAmRHX8ed0171WTp7_s7cnEtvJtyY9ulC9m8To3AYJoBieigUPoQXzwOootuXANeBju2239N0iE5KnU60DgMBZgLAh9jMZZa0MTe_X-ADKXLc4.Cf_Y-Q.JUghoniUZmnT9gw2BpeibbSe9BY";
-tvInterface.tokenSearchAllPatients(org_doc, token, function(error, result){
-    if (error) {
-        throw error;
-    }
-    console.log(result[1])
-    var patient = {
-        first_name:"Alex",
-        last_name:"Mathews"
-    }
-    tvInterface.tokenUpdatePatient(org_doc, token, result[1].document_id, patient, function(error, result){
-        if (error){
-            throw error;
-        }
-        console.log(result)
-    })
-
-});
+// tvInterface.tokenSearchAllPatients(org_doc, token, function(error, result){
+//     if (error) {
+//         throw error;
+//     }
+//     console.log(result[1])
+//     var patient = {
+//         first_name:"Alex",
+//         last_name:"Mathews",
+//         needs_attention:true
+//     }
+//     tvInterface.tokenUpdatePatient(org_doc, token, result[1].document_id, patient, function(error, result){
+//         if (error){
+//             throw error;
+//         }
+//         console.log(result)
+//     });
+//
+// });
 // tvInterface.verifyToken(, function(error, result) {
 //     if (error) {
 //         throw error;
