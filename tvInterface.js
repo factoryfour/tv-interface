@@ -58,7 +58,7 @@ module.exports = function(config) {
 
         var group_policy = [{
             Resources: [
-                "Vault::" + organization.vault + "::Document"
+                "Vault::" + organization.vault + "::Document::.*"
             ],
             Activities: "RUD"
         }, {
@@ -77,6 +77,42 @@ module.exports = function(config) {
             },
             formData: {
                 name: "cli_policy_" + organization.id,
+                policy: group_policy_enc
+            }
+        };
+
+        request(groupPolicyCreateOptions, function(error, response, policyCreatedBody) {
+            if (error) return callback(Error(error), null);
+            var policyCreatedParsed = JSON.parse(policyCreatedBody);
+            var group_policy_id = policyCreatedParsed.group.group_id;
+            organization.group_policy = group_policy_id;
+            // console.log("Created group policy named " + policyCreatedParsed.group.name +" with ID " + group_policy_id);
+            return callback(null, organization)
+        });
+    };
+
+    tvModule.updateOrgGroupPolicy = function(organization, callback) {
+
+        var group_policy = [{
+            Resources: [
+                "Vault::" + organization.vault + "::Document::.*"
+            ],
+            Activities: "RUD"
+        }, {
+            Resources: [
+                "Vault::" + organization.vault + "::Search::"
+            ],
+            Activities: "R"
+        }];
+        var group_policy_enc = new Buffer(JSON.stringify(group_policy)).toString('base64')
+
+        var groupPolicyCreateOptions = {
+            method: 'PUT',
+            url: 'https://api.truevault.com/v1/groups/' + organization.group_policy,
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
                 policy: group_policy_enc
             }
         };
@@ -392,7 +428,7 @@ module.exports = function(config) {
             if (error) return callback(Error(error));
             var searchBodyParsed = JSON.parse(searchBody);
             // console.log(searchBodyParsed.data.info.total_result_count)
-            if (searchBodyParsed.data.info.total_result_count ==0) {
+            if (searchBodyParsed.data.info.total_result_count == 0) {
                 return callback(Error("Organization does not exist"), null);
             }
             if (searchBodyParsed.data.info.total_result_count > 1) {
@@ -404,11 +440,151 @@ module.exports = function(config) {
 
             var doc = searchBodyParsed.data.documents[0].document;
             var doc_dec = JSON.parse(new Buffer(doc, 'base64').toString('ascii'))
-            return callback(null,doc_dec )
+            return callback(null, doc_dec)
         });
 
 
     }
+
+    tvModule.searchAllPatients = function(organization, callback) {
+        var search_option = {
+            filter: {
+                first_name: {
+                    type: "not",
+                    value: "",
+                    case_sensitive: false
+                }
+            },
+            full_document: true,
+            page: 1,
+            per_page: 3,
+            schema_id: organization.patient_schema
+        }
+
+        var search_option_enc = new Buffer(JSON.stringify(search_option)).toString('base64')
+
+        var options = {
+            method: 'POST',
+            url: 'https://api.truevault.com/v1/vaults/' + organization.vault + '/search',
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
+                search_option: search_option_enc
+            }
+        };
+
+        request(options, function(error, response, searchBody) {
+            if (error) return callback(Error(error));
+            var searchBodyParsed = JSON.parse(searchBody);
+            if (searchBodyParsed.error) {
+                return callback(Error(searchBodyParsed.error.message))
+            }
+
+            var doc = searchBodyParsed.data.documents;
+            // var doc_dec = JSON.parse(new Buffer(doc, 'base64').toString('ascii'))
+            return callback(null, doc)
+        });
+    }
+
+    tvModule.tokenSearchAllPatients = function(organization, token, callback) {
+        var token_enc = new Buffer(token + ":").toString('base64')
+        var header = "Basic " + token_enc;
+        var search_option = {
+            filter: {
+                first_name: {
+                    type: "not",
+                    value: "",
+                    case_sensitive: false
+                }
+            },
+            full_document: true,
+            page: 1,
+            per_page: 3,
+            schema_id: organization.patient_schema
+        }
+
+        var search_option_enc = new Buffer(JSON.stringify(search_option)).toString('base64')
+
+        var options = {
+            method: 'POST',
+            url: 'https://api.truevault.com/v1/vaults/' + organization.vault + '/search',
+            headers: {
+                authorization: header
+            },
+            formData: {
+                search_option: search_option_enc
+            }
+        };
+
+        request(options, function(error, response, searchBody) {
+            if (error) return callback(Error(error));
+            var searchBodyParsed = JSON.parse(searchBody);
+            if (searchBodyParsed.error) {
+                return callback(Error(searchBodyParsed.error.message))
+            }
+
+            var doc = searchBodyParsed.data.documents;
+            // var doc_dec = JSON.parse(new Buffer(doc, 'base64').toString('ascii'))
+            return callback(null, doc)
+        });
+    }
+
+
+    tvModule.tokenUpdatePatient = function(organization, token, doc_id, patient, callback) {
+        var token_enc = new Buffer(token + ":").toString('base64')
+        var header = "Basic " + token_enc;
+        var doc_enc = new Buffer(JSON.stringify(patient)).toString('base64')
+
+        var options = {
+            method: 'GET',
+            url: 'https://api.truevault.com/v1/vaults/' + organization.vault + '/documents/' + doc_id,
+            headers: {
+                authorization: header
+            }
+            // ,
+            // formData: {
+            //     document: doc_enc
+            // }
+        };
+
+        request(options, function(error, response, searchBody) {
+            if (error) return callback(Error(error));
+            var searchBodyParsed = JSON.parse(searchBody);
+            if (searchBodyParsed.error) {
+                return callback(Error(searchBodyParsed.error.message))
+            }
+
+            var doc = searchBodyParsed.data.documents;
+            // var doc_dec = JSON.parse(new Buffer(doc, 'base64').toString('ascii'))
+            return callback(null, doc)
+        });
+    }
+
+    tvModule.verifyToken = function(token, callback) {
+
+        var token_enc = new Buffer(token + ":").toString('base64')
+
+        var options = {
+            method: 'GET',
+            url: 'https://api.truevault.com/v1/auth/me?full=true',
+            headers: {
+                authorization: "Basic " + token_enc
+            }
+        };
+
+        request(options, function(error, response, body) {
+            if (error) return callback(Error(error));
+            // console.log(body)
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message))
+            }
+
+            var doc = bodyParsed;
+            return callback(null, doc)
+        });
+    };
 
     tvModule.allDocuments = function(vaultId, callback) {
         var options = {
@@ -431,7 +607,7 @@ module.exports = function(config) {
 
             return callback(null, bodyParsed)
         });
-    }
+    };
 
     tvModule.createPatient = function(organization, patient, callback) {
         var patient_enc = new Buffer(JSON.stringify(patient)).toString('base64');
@@ -457,7 +633,9 @@ module.exports = function(config) {
 
             return callback(null, bodyParsed)
         });
-    }
+    };
+
+
 
     tvModule.addUserToOrganization = function(organization, user_id, callback) {
         var options = {
@@ -522,7 +700,7 @@ module.exports = function(config) {
         });
     }
 
-    tvModule.uniqueUsername = function(email, callback ) {
+    tvModule.uniqueUsername = function(email, callback) {
         var optionsAlt = {
             "filter": {
                 "$tv.username": {
@@ -556,7 +734,7 @@ module.exports = function(config) {
                 return callback(Error(bodyParsed.error.message))
             }
             if (bodyParsed.data.info.total_result_count > 0) {
-                return callback(null,false);
+                return callback(null, false);
             }
             return callback(null, true)
         });
