@@ -610,10 +610,8 @@ module.exports = function(config) {
         });
     };
 
-    tvModule.createPatient = function(organization, owner_id, callback) {
-        var patient = {
-            owner : owner_id
-        };
+    tvModule.createPatient = function(organization, callback) {
+        var patient = {};
         var patient_enc = new Buffer(JSON.stringify(patient)).toString('base64');
 
         var options = {
