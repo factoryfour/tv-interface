@@ -1,4 +1,5 @@
 var request = require('request')
+var fs = require('fs');
 
 module.exports = function(config) {
     var TV_API_KEY = config.TV_API_KEY;
@@ -58,9 +59,10 @@ module.exports = function(config) {
 
         var group_policy = [{
             Resources: [
-                "Vault::" + organization.vault + "::Document::.*"
+                "Vault::" + organization.vault + "::Document::.*",
+                "Vault::" + organization.vault + "::Blob::.*"
             ],
-            Activities: "RUD"
+            Activities: "RU"
         }, {
             Resources: [
                 "Vault::" + organization.vault + "::Search::"
@@ -95,9 +97,10 @@ module.exports = function(config) {
 
         var group_policy = [{
             Resources: [
-                "Vault::" + organization.vault + "::Document::.*"
+                "Vault::" + organization.vault + "::Document::.*",
+                "Vault::" + organization.vault + "::Blob::.*"
             ],
-            Activities: "RUD"
+            Activities: "RU"
         }, {
             Resources: [
                 "Vault::" + organization.vault + "::Search::"
@@ -213,7 +216,56 @@ module.exports = function(config) {
             return callback(null, organization)
         });
     };
+    tvModule.addOrgMediaSchema = function(organization, callback) {
 
+        var media_schema = {
+            name: "media",
+            fields: [{
+                name: "name",
+                index: true,
+                type: "string"
+            }, {
+                name: "patient_id",
+                index: true,
+                type: "string"
+            },{
+                name: "created_date",
+                index: true,
+                type: "string"
+            },{
+                name: "blob_id",
+                index: true,
+                type: "string"
+            },{
+                name: "type",
+                index: true,
+                type: "string"
+            }]
+        }
+
+        var media_schema_enc = new Buffer(JSON.stringify(media_schema)).toString('base64');
+
+        var mediaSchemaCreateOptions = {
+            method: 'POST',
+            url: 'https://api.truevault.com/v1/vaults/' + organization.vault + '/schemas',
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
+                schema: media_schema_enc
+            }
+        };
+
+        request(mediaSchemaCreateOptions, function(error, response, schemaCreatedBody) {
+            if (error) return callback(Error(error), null);
+            var schemaCreatedBodyParsed = JSON.parse(schemaCreatedBody);
+            // console.log(schemaCreatedBodyParsed)
+            var schema_id = schemaCreatedBodyParsed.schema.id;
+            organization.media_schema = schema_id;
+            // console.log("Created group policy named " + policyCreatedParsed.group.name +" with ID " + group_policy_id);
+            return callback(null, organization)
+        });
+    };
     tvModule.pushOrgDocument = function(organization, callback) {
         var request = require("request");
         // console.log(organization)
@@ -636,7 +688,57 @@ module.exports = function(config) {
         });
     };
 
+    tvModule.createBlob = function(organization, callback) {
+        var patient = {};
+        var patient_enc = new Buffer(JSON.stringify(patient)).toString('base64');
 
+        var options = {
+            method: 'POST',
+            url: 'https://api.truevault.com/v1/vaults/' + organization.vault + '/blobs',
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
+                file: fs.createReadStream("./default.json")
+            }
+        };
+
+        request(options, function(error, response, body) {
+            if (error) return callback(Error(error));
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message))
+            }
+            console.log(bodyParsed);
+            return callback(null, bodyParsed.blob_id)
+        });
+    };
+
+    tvModule.createMediaDoc = function(organization, callback) {
+        var mediaDoc = {};
+        var mediaDoc_enc = new Buffer(JSON.stringify(mediaDoc)).toString('base64');
+
+        var options = {
+            method: 'POST',
+            url: 'https://api.truevault.com/v1/vaults/' + organization.vault + '/documents',
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
+                document: mediaDoc_enc,
+                schema_id: organization.media_schema
+            }
+        };
+
+        request(options, function(error, response, body) {
+            if (error) return callback(Error(error));
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message))
+            }
+            return callback(null, bodyParsed.document_id)
+        });
+    };
 
     tvModule.addUserToOrganization = function(organization, user_id, callback) {
         var options = {
@@ -698,6 +800,49 @@ module.exports = function(config) {
             }
 
             return callback(null, searchBodyParsed.data.documents)
+        });
+    }
+
+    tvModule.getPatient = function(organization,pid, callback) {
+        var options = {
+            method: 'GET',
+            url: 'https://api.truevault.com/v1/vaults/' + organization.vault + '/documents/' + pid,
+            headers: {
+                authorization: TV_AUTH_HEADER
+            }
+        };
+
+        request(options, function(error, response, body) {
+            if (error) return callback(Error(error));
+            var bodyDecoded = new Buffer(body, 'base64').toString('ascii');
+            var bodyParsed = JSON.parse(bodyDecoded);
+            console.log(bodyDecoded)
+            return callback(null, bodyParsed)
+        });
+    }
+
+    tvModule.updatePatient = function(organization, pid, patient, callback) {
+        var doc_enc = new Buffer(JSON.stringify(patient)).toString('base64')
+        console.log(doc_enc)
+        var options = {
+            method: 'PUT',
+            url: 'https://api.truevault.com/v1/vaults/' + organization.vault + '/documents/' + pid,
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
+                document: doc_enc
+            }
+        };
+
+        request(options, function(error, response, body) {
+            if (error) return callback(Error(error));
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(searchBodyParsed.error.message))
+            }
+            // console.log(bodyDecoded)
+            return callback(null,bodyParsed )
         });
     }
 

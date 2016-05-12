@@ -13,39 +13,39 @@ var TV_AUTH_HEADER = "Basic " + TV_API_KEY_ENC;
 var request = require('request');
 var tvInterface = require('./tvinterface.js')(config);
 
-var org_doc = {
-    name: 'Fusiform',
-    id: '7804d806-13cd-40c9-84d2-373824ddc922',
-    vault: '81e2d7c8-0db8-4dbf-9a55-1235d9df9ee2',
-    patient_schema: '8bdcf0a8-2c78-42cf-943e-7d13f1b3b0fb',
-    group_policy: '1a7e6490-7707-4abe-95d3-c73e260f0932',
-    is_vendor: false,
-    is_active: true,
-    admins: [],
-    users: [],
-    org_street: '3201 Saint Paul St',
-    org_city: 'Baltimore',
-    org_state: 'MD',
-    org_zip: '21218',
-    admin: '[dad51e97-7d1a-4dd1-a77b-d57518d3fefa]'
-}
-
-tvInterface.createPatient(org_doc, function(error, document_id) {
-    if (error) {
-        throw error;
-    }
-    var patient = {
-       first_name:"Alex",
-       last_name:"Mathews",
-       needs_attention:true
-   }
-   tvInterface.tokenUpdatePatient(org_doc, token, document_id, patient, function(error, result){
-       if (error){
-           throw error;
-       }
-       console.log(result)
-   });
-})
+// var org_doc = {
+//     name: 'Fusiform',
+//     id: '7804d806-13cd-40c9-84d2-373824ddc922',
+//     vault: '81e2d7c8-0db8-4dbf-9a55-1235d9df9ee2',
+//     patient_schema: '8bdcf0a8-2c78-42cf-943e-7d13f1b3b0fb',
+//     group_policy: '1a7e6490-7707-4abe-95d3-c73e260f0932',
+//     is_vendor: false,
+//     is_active: true,
+//     admins: [],
+//     users: [],
+//     org_street: '3201 Saint Paul St',
+//     org_city: 'Baltimore',
+//     org_state: 'MD',
+//     org_zip: '21218',
+//     admin: '[dad51e97-7d1a-4dd1-a77b-d57518d3fefa]'
+// }
+//
+// tvInterface.createPatient(org_doc, function(error, document_id) {
+//     if (error) {
+//         throw error;
+//     }
+//     var patient = {
+//        first_name:"Alex",
+//        last_name:"Mathews",
+//        needs_attention:true
+//    }
+//    tvInterface.tokenUpdatePatient(org_doc, token, document_id, patient, function(error, result){
+//        if (error){
+//            throw error;
+//        }
+//        console.log(result)
+//    });
+// })
 
 // tvInterface.updateOrgGroupPolicy(org_doc, function(error, result){
 //         if (error) {
@@ -54,7 +54,7 @@ tvInterface.createPatient(org_doc, function(error, document_id) {
 //         console.log(result)
 // });
 
-var token = ".eJwljcsOgjAQAP-lV91k-9qWnv0ED3IiC9smxKBE4IDGf7fqdTKTeal1nPKy8jSrpAxqAnRg_FlTspSwOSAmRHX8ed0171WTp7_s7cnEtvJtyY9ulC9m8To3AYJoBieigUPoQXzwOootuXANeBju2239N0iE5KnU60DgMBZgLAh9jMZZa0MTe_X-ADKXLc4.Cf_Y-Q.JUghoniUZmnT9gw2BpeibbSe9BY";
+// var token = ".eJwljcsOgjAQAP-lV91k-9qWnv0ED3IiC9smxKBE4IDGf7fqdTKTeal1nPKy8jSrpAxqAnRg_FlTspSwOSAmRHX8ed0171WTp7_s7cnEtvJtyY9ulC9m8To3AYJoBieigUPoQXzwOootuXANeBju2239N0iE5KnU60DgMBZgLAh9jMZZa0MTe_X-ADKXLc4.Cf_Y-Q.JUghoniUZmnT9gw2BpeibbSe9BY";
 // tvInterface.tokenSearchAllPatients(org_doc, token, function(error, result){
 //     if (error) {
 //         throw error;
@@ -195,9 +195,39 @@ var token = ".eJwljcsOgjAQAP-lV91k-9qWnv0ED3IiC9smxKBE4IDGf7fqdTKTeal1nPKy8jSrpA
 
 // var user_id = "d859b353-8368-4aa7-b73e-4f01bf2df679"
 //
-// tvInterface.searchForOrgByID("1c98b49f-64fa-4aa5-9f43-35fb090958d2", function(error, organization){
-//     tvInterface.addUserToOrganization(organization, user_id, function(error, success){
-//     console.log(error);
-//     console.log(success);
+// tvInterface.searchForOrgByID("7804d806-13cd-40c9-84d2-373824ddc922", function(error, organization){
+//     tvInterface.getPatient(organization,'E7B1408A-2FF6-4013-B466-C5F604E7668B', function(error, patient){
+//         console.log(patient);
+//         var media = [
+//             {
+//                 blob:"asdf1234",
+//                 metadata:"asdflkajsdf"
+//             }
+//         ];
+//         var strMedia = JSON.stringify(media);
+//         patient.media = strMedia;
+//         tvInterface.updatePatient(organization,'E7B1408A-2FF6-4013-B466-C5F604E7668B', patient, function(error, success){
+//             tvInterface.getPatient(organization,'E7B1408A-2FF6-4013-B466-C5F604E7668B', function(error, patient){
+//                 console.log(patient)
+//                 parsed = JSON.parse(patient.media);
+//
+//             });
+//         });
 //     });
 // });
+
+
+
+tvInterface.searchForOrgByID("7804d806-13cd-40c9-84d2-373824ddc922", function(error, organization) {
+    // tvInterface.addOrgMediaSchema(organization, function(error, organization) {
+    //     tvInterface.pushOrgDocument(organization, function(error, success) {
+    //         console.log(error);
+    //         console.log(success);
+    //     });
+    // });
+    console.log(error)
+    console.log(organization);
+    tvInterface.createMediaDoc(organization, function(error, success){
+        console.log(success);
+    });
+});
