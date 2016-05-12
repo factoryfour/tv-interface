@@ -182,14 +182,6 @@ module.exports = function(config) {
                 name: "needs_attention",
                 index: true,
                 type: "boolean"
-            }, {
-                name: "orders",
-                index: true,
-                type: "string"
-            }, {
-                name: "media",
-                index: true,
-                type: "string"
             }]
         }
 
