@@ -699,7 +699,7 @@ module.exports = function(config) {
                 authorization: TV_AUTH_HEADER
             },
             formData: {
-                file: fs.createReadStream("./default.json")
+                file: fs.createReadStream(__dirname + "/default.json")
             }
         };
 
