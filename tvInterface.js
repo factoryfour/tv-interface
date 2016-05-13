@@ -297,7 +297,7 @@ module.exports = function(config) {
             filter: {
                 id: {
                     type: "eq",
-                    value: id,
+                    value: organization.id,
                     case_sensitive: false
                 }
             },
