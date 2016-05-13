@@ -186,10 +186,6 @@ module.exports = function(config) {
                 name: "orders",
                 index: true,
                 type: "string"
-            }, {
-                name: "media",
-                index: true,
-                type: "string"
             }]
         }
 
