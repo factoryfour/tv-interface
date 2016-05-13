@@ -1,5 +1,3 @@
-var uuid = require('uuid');
-
 var config = require('./config.js')
 
 var TV_ACCOUNT_ID = config.TV_ACCOUNT_ID;
@@ -218,16 +216,69 @@ var tvInterface = require('./tvinterface.js')(config);
 
 
 
-tvInterface.searchForOrgByID("7804d806-13cd-40c9-84d2-373824ddc922", function(error, organization) {
-    // tvInterface.addOrgMediaSchema(organization, function(error, organization) {
-    //     tvInterface.pushOrgDocument(organization, function(error, success) {
-    //         console.log(error);
-    //         console.log(success);
-    //     });
-    // });
-    console.log(error)
-    console.log(organization);
-    tvInterface.createMediaDoc(organization, function(error, success){
-        console.log(success);
-    });
+// tvInterface.searchForOrgByID("7804d806-13cd-40c9-84d2-373824ddc922", function(error, organization) {
+//     // tvInterface.addOrgMediaSchema(organization, function(error, organization) {
+//     //     tvInterface.pushOrgDocument(organization, function(error, success) {
+//     //         console.log(error);
+//     //         console.log(success);
+//     //     });
+//     // });
+//     console.log(error)
+//     console.log(organization);
+//     tvInterface.createMediaDoc(organization, function(error, success){
+//         console.log(success);
+//     });
+// });
+
+var id = "67207259-5104-42f1-86d0-eb12f0112abd"
+var search_option = {
+    filter: {
+        is_active: {
+            type: "eq",
+            value: true,
+            case_sensitive: false
+        }
+    },
+    full_document: true,
+    schema_id: config.TV_ORG_SCHEMA_ID
+}
+
+var search_option_enc = new Buffer(JSON.stringify(search_option)).toString('base64')
+
+var options = {
+    method: 'POST',
+    url: 'https://api.truevault.com/v1/vaults/' + config.TV_ADMIN_VAULT_ID + '/search',
+    headers: {
+        authorization: TV_AUTH_HEADER
+    },
+    formData: {
+        search_option: search_option_enc
+    }
+};
+
+request(options, function(error, response, searchBody) {
+    if (error) return callback(Error(error));
+    var searchBodyParsed = JSON.parse(searchBody);
+    console.log(searchBodyParsed.data.info.total_result_count)
+    // console.log(searchBodyParsed.data.documents);
+    for (doc in searchBodyParsed.data.documents) {
+      var org = (JSON.parse(new Buffer(searchBodyParsed.data.documents[doc].document, 'base64').toString('ascii')));
+      if(org.admin) {
+        console.log("its here")
+
+        adminsT = [];
+        adminsT.push(org.admin.substring(1, org.admin.length -1));
+        org.admins = JSON.stringify(adminsT);
+        delete org["admin"];
+        console.log(org);
+        console.log(searchBodyParsed.data.documents[doc].document_id)
+        tvInterface.updateOrgDocument(org, function(error, success) {
+          console.log(error)
+          console.log(success)
+        })
+      } else {
+        console.log("its not here");
+        console.log(org)
+      }
+    }
 });
