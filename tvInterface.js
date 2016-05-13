@@ -224,15 +224,15 @@ module.exports = function(config) {
                 name: "patient_id",
                 index: true,
                 type: "string"
-            },{
+            }, {
                 name: "created_date",
                 index: true,
                 type: "string"
-            },{
+            }, {
                 name: "blob_id",
                 index: true,
                 type: "string"
-            },{
+            }, {
                 name: "type",
                 index: true,
                 type: "string"
@@ -263,7 +263,6 @@ module.exports = function(config) {
         });
     };
     tvModule.pushOrgDocument = function(organization, callback) {
-        var request = require("request");
         // console.log(organization)
         var org_enc = new Buffer(JSON.stringify(organization)).toString('base64');
         // console.log(org_enc)
@@ -289,6 +288,80 @@ module.exports = function(config) {
             }
             return callback(null, "Success");
         });
+
+    }
+
+
+    tvModule.updateOrgDocument = function(organization, callback) {
+        var search_option = {
+            filter: {
+                id: {
+                    type: "eq",
+                    value: id,
+                    case_sensitive: false
+                }
+            },
+            full_document: true,
+            page: 1,
+            per_page: 3,
+            schema_id: config.TV_ORG_SCHEMA_ID
+        }
+
+        var search_option_enc = new Buffer(JSON.stringify(search_option)).toString('base64')
+
+        var options = {
+            method: 'POST',
+            url: 'https://api.truevault.com/v1/vaults/' + config.TV_ADMIN_VAULT_ID + '/search',
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
+                search_option: search_option_enc
+            }
+        };
+
+        request(options, function(error, response, searchBody) {
+            if (error) return callback(Error(error));
+            var searchBodyParsed = JSON.parse(searchBody);
+            // console.log(searchBodyParsed.data.info.total_result_count)
+            if (searchBodyParsed.data.info.total_result_count == 0) {
+                return callback(Error("Organization does not exist"), null);
+            }
+            if (searchBodyParsed.data.info.total_result_count > 1) {
+                return callback(Error("Strange behavior, multiple org documents"), null);
+            }
+            if (searchBodyParsed.error) {
+                return callback(Error(searchBodyParsed.error.message))
+            }
+
+            var doc = searchBodyParsed.data.documents[0].document;
+            var doc_id = searchBodyParsed.data.documents[0].document_id;
+
+            var org_enc = new Buffer(JSON.stringify(organization)).toString('base64');
+            var options = {
+                method: 'PUT',
+                url: 'https://api.truevault.com/v1/vaults/' + TV_ADMIN_VAULT_ID + '/documents/'+ doc_id,
+                headers: {
+                    authorization: TV_AUTH_HEADER
+                },
+                formData: {
+                    document: org_enc,
+                    schema_id: config.TV_ORG_SCHEMA_ID
+                }
+            };
+
+            request(options, function(error, response, orgPushedBody) {
+                if (error) return callback(error, null);
+                var orgPushedBodyParsed = JSON.parse(orgPushedBody);
+                // console.log(orgPushedBodyParsed)
+                if (orgPushedBodyParsed.error) {
+                    return callback(Error(orgPushedBodyParsed.error.message))
+                }
+                return callback(null, "Success");
+            });
+
+        });
+
 
     }
 
@@ -589,8 +662,7 @@ module.exports = function(config) {
             url: 'https://api.truevault.com/v1/vaults/' + organization.vault + '/documents/' + doc_id,
             headers: {
                 authorization: header
-            }
-            ,
+            },
             formData: {
                 document: doc_enc
             }
@@ -799,7 +871,7 @@ module.exports = function(config) {
         });
     }
 
-    tvModule.getPatient = function(organization,pid, callback) {
+    tvModule.getPatient = function(organization, pid, callback) {
         var options = {
             method: 'GET',
             url: 'https://api.truevault.com/v1/vaults/' + organization.vault + '/documents/' + pid,
@@ -838,7 +910,7 @@ module.exports = function(config) {
                 return callback(Error(searchBodyParsed.error.message))
             }
             // console.log(bodyDecoded)
-            return callback(null,bodyParsed )
+            return callback(null, bodyParsed)
         });
     }
 
