@@ -302,8 +302,6 @@ module.exports = function(config) {
                 }
             },
             full_document: true,
-            page: 1,
-            per_page: 3,
             schema_id: config.TV_ORG_SCHEMA_ID
         }
 
