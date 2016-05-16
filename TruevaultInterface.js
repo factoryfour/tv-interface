@@ -4,26 +4,24 @@ module.exports = function(config) {
 
     var TV_API_KEY = config.TV_API_KEY;
     var TV_ACCOUNT_ID = config.TV_ACCOUNT_ID;
-
     if (!config.TV_API_KEY || !config.TV_ACCOUNT_ID) {
-        throw Error('001-TV Interface must be instantiated with an API Key and Account ID.')
+        throw Error('001-TV Interface must be instantiated with an API Key and Account ID.');
     }
 
     var TV_API_KEY_ENC = new Buffer(config.TV_API_KEY + ':').toString('base64');
     var TV_AUTH_HEADER = 'Basic ' + TV_API_KEY_ENC;
-
 
     var tvModule = {};
 
     // Section 1 - Vault Methods ===============================================
 
     /**
-     * createVault - Create a new vault
+     * createVault - Create a new vault.
      *
      * @param  {string}     name     name of the vault (must be unique)
      * @param  {function}   callback function(error, vault_id)
      */
-    tvModule.createVault = function(name,callback) {
+    tvModule.createVault = function(name, callback) {
         // Configure options with name
         var vaultCreateOptions = {
             method: 'POST',
@@ -39,20 +37,122 @@ module.exports = function(config) {
         request(vaultCreateOptions, function(error, response, body) {
             if (error) return callback(Error(error), null);
             var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), null);
+            }
             return callback(null, bodyParsed.vault.id);
         });
-    }
+    };
+
+    /**
+     * deleteVault - Delete a new vault.
+     *
+     * @param  {string}     id       id of the vault
+     * @param  {function}   callback function(error, success)
+     */
+    tvModule.deleteVault = function(id, callback) {
+        // Configure options with name
+        var vaultCreateOptions = {
+            method: 'DELETE',
+            url: 'https://api.truevault.com/v1/vaults/' + id,
+            headers: {
+                authorization: TV_AUTH_HEADER
+            }
+        };
+
+        request(vaultCreateOptions, function(error, response, body) {
+            if (error) return callback(Error(error), false);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), null);
+            }
+            return callback(null, true);
+        });
+    };
+
+    /**
+     * getAllVaults - list all vaults.
+     *
+     * @param  {function} callback function(error, vaults)
+     */
+    tvModule.getAllVaults = function(callback) {
+        // Configure options for simple GET
+        var vaultCreateOptions = {
+            method: 'GET',
+            url: 'https://api.truevault.com/v1/vaults',
+            headers: {
+                authorization: TV_AUTH_HEADER
+            }
+        };
+
+        request(vaultCreateOptions, function(error, response, body) {
+            if (error) return callback(Error(error), null);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), null);
+            }
+            return callback(null, bodyParsed.vaults);
+        });
+    };
 
     // Section 2 - User Methods ================================================
 
-        // Access Key
-        // Verify
+    /**
+     * getAllUsers - Return list of all users.
+     *
+     * @param  {function} callback function(error, users)
+     */
+    tvModule.getAllUsers = function(callback) {
+        // Configure options for simple GET
+        var vaultCreateOptions = {
+            method: 'GET',
+            url: 'https://api.truevault.com/v1/users',
+            headers: {
+                authorization: TV_AUTH_HEADER
+            }
+        };
+
+        request(vaultCreateOptions, function(error, response, body) {
+            if (error) return callback(Error(error), null);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), null);
+            }
+            return callback(null, bodyParsed.users);
+        });
+    };
+
+    /**
+     * accessKeys - Get a set of Access and Secret Keys.
+     *
+     * @param  {string}     id       UserID to generate keys for
+     * @param  {function}   callback function(error, access_key, secret_key)
+     */
+    tvModule.accessKeys = function(id, callback) {
+        // Configure options for simple GET
+        var vaultCreateOptions = {
+            method: 'POST',
+            url: 'https://api.truevault.com/v1/users/' + id + '/access_key',
+            headers: {
+                authorization: TV_AUTH_HEADER
+            }
+        };
+
+        request(vaultCreateOptions, function(error, response, body) {
+            if (error) return callback(Error(error), null);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), null);
+            }
+            return callback(null, bodyParsed.user.access_key, bodyParsed.user.secret_key);
+        });
+    };
 
     // Section 3 - Group Methods ===============================================
 
-        // Create group_policy
-        // Update group_policy
-        // Add User to Group Policy
+    // Create group_policy
+    // Update group_policy
+    // Add User to Group Policy
 
     // Section 4 - Schema Methods ==============================================
 
@@ -94,7 +194,7 @@ module.exports = function(config) {
             }
             return callback(null, docs)
         });
-    }
+    };
 
 
 

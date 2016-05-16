@@ -25,6 +25,7 @@ var search_option = {
 
 var org_schema = require('./schemas/org.js')
 console.log(org_schema)
+
 tvInterface.createVault('test_vaults', function (error, docs) {
     console.log(error)
     console.log(docs)
