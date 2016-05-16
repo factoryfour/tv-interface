@@ -45,7 +45,14 @@ module.exports = function(config) {
 
     // Section 2 - User Methods ================================================
 
+        // Access Key
+        // Verify
+
     // Section 3 - Group Methods ===============================================
+
+        // Create group_policy
+        // Update group_policy
+        // Add User to Group Policy
 
     // Section 4 - Schema Methods ==============================================
 
