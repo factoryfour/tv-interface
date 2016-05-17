@@ -16,6 +16,10 @@ describe('Document Methods', function() {
     var created_schema_id;
     var created_document_id;
 
+    var test = {
+        hello: "hi"
+    }
+
     before(function(done) {
         // runs before all tests in this block
         tvInterface.createVault(vaultName, function(error, results) {
@@ -59,7 +63,7 @@ describe('Document Methods', function() {
     });
 
 
-    it('documentTests-02 - should be able to create a schema', function(done) {
+    it('documentTests-02 - should be able to create an empty document', function(done) {
         tvInterface.createEmptyDocument(created_vault_id, created_schema_id, function(error, result) {
             should.not.exist(error);
             should.exist(result);
@@ -68,7 +72,7 @@ describe('Document Methods', function() {
         });
     });
 
-    it('documentTests-02 - should have created a schema', function(done) {
+    it('documentTests-02 - should have created a document', function(done) {
         tvInterface.getAllDocuments(created_vault_id, function(error, results) {
             should.not.exist(error);
             should.exist(results);
@@ -83,8 +87,8 @@ describe('Document Methods', function() {
         });
     });
 
-    it('documentTests-04 - should be able to update a document', function(done) {
-        tvInterface.updateDocument(created_vault_id, created_document_id, {hello:"hi"}, function(error, results) {
+    it('documentTests-03 - should be able to update a document', function(done) {
+        tvInterface.updateDocument(created_vault_id, created_document_id, test, function(error, results) {
             should.not.exist(error);
             results.should.equal(true);
             done();
@@ -97,7 +101,7 @@ describe('Document Methods', function() {
         tvInterface.getDocument(created_vault_id, created_document_id, function(error, result) {
             should.not.exist(error);
             should.exist(result);
-            result.hello.should.equal('hi');
+            result.hello.should.equal(test.hello);
             done();
         });
     });
@@ -110,7 +114,7 @@ describe('Document Methods', function() {
         });
     });
 
-    it('documentTests-05 - should have deleted the schema', function(done) {
+    it('documentTests-05 - should have deleted the document', function(done) {
         tvInterface.getAllDocuments(created_vault_id, function(error, results) {
             should.not.exist(error);
             should.exist(results);
@@ -125,6 +129,16 @@ describe('Document Methods', function() {
         });
     });
 
-
-
+    it('documentTests-06 - should be able to create and delete a document', function(done) {
+        tvInterface.createDocument(created_vault_id, created_schema_id, test, function(error, result) {
+            should.not.exist(error);
+            should.exist(result);
+            created_document_id = result;
+            tvInterface.deleteDocument(created_vault_id, created_document_id, function(error, results) {
+                should.not.exist(error);
+                should.exist(results);
+                done();
+            });
+        });
+    });
 });

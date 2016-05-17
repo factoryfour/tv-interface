@@ -579,11 +579,92 @@ module.exports = function(config) {
     };
     // Section 6 - Blob Methods ================================================
 
-    // Create Blob
-    // Delete Blob
-    // Get Blob
-    tvModule.createNewEmptyBlob = function(vault_id, callback) {
-        return callback(null, false);
+
+    /**
+     * createBlob - Create a blob from a file.
+     *
+     * @param  {string}     vault    Vault to create in
+     * @param  {ReadStream} file     File to create blob fore
+     * @param  {function}   callback function(error, blob_id)
+     */
+    tvModule.createBlob = function(vault, file, callback) {
+        var options = {
+            method: 'POST',
+            url: 'https://api.truevault.com/v1/vaults/' + vault + '/blobs',
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
+                file: file
+            }
+        };
+
+        request(options, function(error, response, body) {
+            if (error) return callback(Error(error), null);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), null)
+            }
+            return callback(null, bodyParsed.blob_id)
+        });
+    }
+
+    /**
+     * createEmptyBlob - Create an empty blob to overwrite.
+     *
+     * @param  {string}     vault    Vault to create in
+     * @param  {function}   callback function(error, blob_id)
+     */
+    tvModule.createEmptyBlob = function(vault, callback) {
+        tvModule.createBlob(vault, fs.createReadStream(__dirname + "/default.json"), callback);
+    }
+
+    /**
+     * deleteBlob - Delete a blob from a file.
+     *
+     * @param  {string}     vault    Vault to create in
+     * @param  {ReadStream} blob_id  Blob id to delete
+     * @param  {function}   callback function(error, success)
+     */
+    tvModule.deleteBlob = function(vault, file, callback) {
+        var options = {
+            method: 'DELETE',
+            url: 'https://api.truevault.com/v1/vaults/' + vault + '/blobs/' + blob_id,
+            headers: {
+                authorization: TV_AUTH_HEADER
+            }
+        };
+
+        request(options, function(error, response, body) {
+            if (error) return callback(Error(error), false);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), false)
+            }
+            return callback(null, true);
+        });
+    }
+
+    /**
+     * getBlob - Get a blob from a file.
+     *
+     * @param  {string}     vault    Vault to create in
+     * @param  {ReadStream} blob_id  Blob id to get
+     * @param  {function}   callback function(error, file)
+     */
+    tvModule.getBlob = function(vault, file, callback) {
+        var options = {
+            method: 'GET',
+            url: 'https://api.truevault.com/v1/vaults/' + vault + '/blobs/' + blob_id,
+            headers: {
+                authorization: TV_AUTH_HEADER
+            }
+        };
+
+        request(options, function(error, response, body) {
+            if (error) return callback(Error(error), false);
+            return callback(null, body)
+        });
     }
 
     // Section 7 - Search Methods ==============================================
