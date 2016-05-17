@@ -150,9 +150,130 @@ module.exports = function(config) {
 
     // Section 3 - Group Methods ===============================================
 
-    // Create group_policy
-    // Update group_policy
-    // Add User to Group Policy
+    /**
+     * createGroup - Create a new group.
+     *
+     * @param  {String}     name     Name of the policy (must be unique).
+     * @param  {JSON}       policy   JSON of the Group Policy
+     * @param  {function}   callback function(error, policy_id)
+     */
+    tvModule.createGroup = function(name, policy, callback) {
+        var policy_enc = new Buffer(JSON.stringify(policy)).toString('base64')
+
+        var groupPolicyCreateOptions = {
+            method: 'POST',
+            url: 'https://api.truevault.com/v1/groups',
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
+                name: name,
+                policy: policy_enc
+            }
+        };
+
+        request(groupPolicyCreateOptions, function(error, response, body) {
+            if (error) return callback(Error(error), null);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), null);
+            }
+            var policy_id = bodyParsed.group.group_id;
+            return callback(null, policy_id)
+        });
+    };
+
+    /**
+     * deleteGroup - Delete a group.
+     *
+     * @param  {String}     id       Group Policy ID.
+     * @param  {function}   callback function(error, success)
+     */
+    tvModule.deleteGroup = function(id, callback) {
+        var policy_enc = new Buffer(JSON.stringify(policy)).toString('base64')
+
+        var groupPolicyCreateOptions = {
+            method: 'DELETE',
+            url: 'https://api.truevault.com/v1/groups/' + id,
+            headers: {
+                authorization: TV_AUTH_HEADER
+            }
+        };
+
+        request(groupPolicyCreateOptions, function(error, response, body) {
+            if (error) return callback(Error(error), false);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), false);
+            }
+            return callback(null, true)
+        });
+    };
+
+
+    /**
+     * updateGroupPolicy - Update a new group policy
+     *
+     * @param  {String}     id       ID of the policy.
+     * @param  {JSON}       policy   JSON of the Group Policy
+     * @param  {function}   callback function(error, policy_id)
+     */
+    tvModule.updateGroupPolicy = function(id, policy, callback) {
+        var policy_enc = new Buffer(JSON.stringify(policy)).toString('base64')
+
+        var groupPolicyCreateOptions = {
+            method: 'PUT',
+            url: 'https://api.truevault.com/v1/groups/' + id,
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
+                policy: policy_enc
+            }
+        };
+
+        request(groupPolicyCreateOptions, function(error, response, body) {
+            if (error) return callback(Error(error), null);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), null);
+            }
+            var policy_id = bodyParsed.group.group_id;
+            return callback(null, policy_id)
+        });
+    };
+
+    /**
+     * addUsersToGroup - Add users to the group.
+     *
+     * @param  {String}     id       ID of the policy.
+     * @param  {Array}      users    JSON of the Group Policy
+     * @param  {function}   callback function(error, policy_id)
+     */
+    tvModule.addUsersToGroup = function(id, users, callback) {
+        var policy_enc = new Buffer(JSON.stringify(policy)).toString('base64')
+
+        var groupPolicyCreateOptions = {
+            method: 'PUT',
+            url: 'https://api.truevault.com/v1/groups/' + id,
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
+                policy: policy_enc
+            }
+        };
+
+        request(groupPolicyCreateOptions, function(error, response, body) {
+            if (error) return callback(Error(error), null);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), null);
+            }
+            var policy_id = bodyParsed.group.group_id;
+            return callback(null, policy_id)
+        });
+    };
 
     // Section 4 - Schema Methods ==============================================
 
@@ -197,6 +318,7 @@ module.exports = function(config) {
     };
 
 
+    // Section 7 - Delete Methods ==============================================
 
 
     return tvModule;

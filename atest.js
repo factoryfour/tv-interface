@@ -23,10 +23,8 @@ var search_option = {
     schema_id: config.TV_ORG_SCHEMA_ID
 };
 
-var org_schema = require('./schemas/org.js')
+var org_schema = require('./prebuilt/org_schema.js')
 console.log(org_schema)
 
-tvInterface.createVault('test_vaults', function (error, docs) {
-    console.log(error)
-    console.log(docs)
-});
+var policy = require('./prebuilt/org_group_policy_base.js');
+console.log(policy('asdf'));

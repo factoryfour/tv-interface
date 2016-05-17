@@ -1,3 +1,8 @@
+/**
+ * org_schema - The organization schema for all orgs.
+ *
+ * @return {JSON} JSON of the group policy
+ */
 module.exports = {
     name: "organization",
     fields: [{
