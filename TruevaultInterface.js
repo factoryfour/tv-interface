@@ -259,7 +259,7 @@ module.exports = function(config) {
                 authorization: TV_AUTH_HEADER
             },
             formData: {
-                user_ids: JSON.stringify(users)
+                user_ids: users.toString()
             }
         };
 
@@ -315,7 +315,7 @@ module.exports = function(config) {
 
             var schemaPolicyCreateOptions = {
                 method: 'POST',
-                url: 'https://api.truevault.com/v1/' + vault + 'schemas',
+                url: 'https://api.truevault.com/v1/vaults/' + vault + '/schemas',
                 headers: {
                     authorization: TV_AUTH_HEADER
                 },
@@ -330,7 +330,7 @@ module.exports = function(config) {
                 if (bodyParsed.error) {
                     return callback(Error(bodyParsed.error.message), null);
                 }
-                var policy_id = bodyParsed.schema.schema_id;
+                var policy_id = bodyParsed.schema.id;
                 return callback(null, policy_id)
             });
         };
@@ -345,7 +345,7 @@ module.exports = function(config) {
             // Delete just the one
             var schemaPolicyCreateOptions = {
                 method: 'DELETE',
-                url: 'https://api.truevault.com/v1/' + vault  + 'schemas/' + id,
+                url: 'https://api.truevault.com/v1/vaults/' + vault  + '/schemas/' + id,
                 headers: {
                     authorization: TV_AUTH_HEADER
                 }
@@ -368,13 +368,13 @@ module.exports = function(config) {
          * @param  {JSON}       policy   JSON of the Schema Policy
          * @param  {function}   callback function(error, policy_id)
          */
-        tvModule.updateSchemaPolicy = function(vault, id, schema, callback) {
+        tvModule.updateSchema = function(vault, id, schema, callback) {
             var schema_enc = new Buffer(JSON.stringify(schema)).toString('base64')
 
             // Update that ID with the new policy
             var schemaPolicyCreateOptions = {
                 method: 'PUT',
-                url: 'https://api.truevault.com/v1/' + vault  + 'schemas/' + id,
+                url: 'https://api.truevault.com/v1/vaults/' + vault  + '/schemas/' + id,
                 headers: {
                     authorization: TV_AUTH_HEADER
                 },
@@ -384,13 +384,12 @@ module.exports = function(config) {
             };
 
             request(schemaPolicyCreateOptions, function(error, response, body) {
-                if (error) return callback(Error(error), null);
+                if (error) return callback(Error(error), false);
                 var bodyParsed = JSON.parse(body);
                 if (bodyParsed.error) {
-                    return callback(Error(bodyParsed.error.message), null);
+                    return callback(Error(bodyParsed.error.message), false);
                 }
-                var policy_id = bodyParsed.schema.schema_id;
-                return callback(null, policy_id)
+                return callback(null, true)
             });
         };
 
@@ -405,7 +404,7 @@ module.exports = function(config) {
             // Configure options for simple GET
             var vaultCreateOptions = {
                 method: 'GET',
-                url: 'https://api.truevault.com/v1/' + vault + '/schemas',
+                url: 'https://api.truevault.com/v1/vaults/' + vault + '/schemas',
                 headers: {
                     authorization: TV_AUTH_HEADER
                 }

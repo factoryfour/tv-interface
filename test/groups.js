@@ -59,7 +59,27 @@ describe('Group Methods', function() {
         });
     });
 
-    it('groupTests-05 - should be able to delete an empty group', function(done) {
+    it('groupTests-05 - should be able to update group policy', function(done) {
+        tvInterface.updateGroupPolicy( created_group_id, policy, function(error, results) {
+            should.not.exist(error);
+            should.exist(results);
+            done();
+        });
+    });
+
+    it('groupTests-06 - should be able to add users to policy', function(done) {
+        tvInterface.getAllUsers(function(error, results) {
+            var id = results[0].user_id;
+            var idB = results[1].user_id;
+            tvInterface.addUsersToGroup(created_group_id,[id,idB], function(error, results) {
+                should.not.exist(error);
+                should.exist(results);
+                done();
+            });
+        });
+    });
+
+    it('groupTests-07 - should be able to delete a group', function(done) {
         tvInterface.deleteGroup(created_group_id, function(error, results) {
             should.not.exist(error);
             should.exist(results);
@@ -67,7 +87,7 @@ describe('Group Methods', function() {
         });
     });
 
-    it('groupTests-06 - should have deleted the group', function(done) {
+    it('groupTests-07 - should have deleted the group', function(done) {
         tvInterface.getAllGroups(function(error, results) {
             should.not.exist(error);
             should.exist(results);
