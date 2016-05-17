@@ -1,4 +1,5 @@
-var request = require('request')
+var request = require('request');
+var lodash = require('lodash');
 
 module.exports = function(config) {
 
@@ -190,8 +191,7 @@ module.exports = function(config) {
      * @param  {function}   callback function(error, success)
      */
     tvModule.deleteGroup = function(id, callback) {
-        var policy_enc = new Buffer(JSON.stringify(policy)).toString('base64')
-
+        // Delete just the one
         var groupPolicyCreateOptions = {
             method: 'DELETE',
             url: 'https://api.truevault.com/v1/groups/' + id,
@@ -210,7 +210,6 @@ module.exports = function(config) {
         });
     };
 
-
     /**
      * updateGroupPolicy - Update a new group policy
      *
@@ -221,6 +220,7 @@ module.exports = function(config) {
     tvModule.updateGroupPolicy = function(id, policy, callback) {
         var policy_enc = new Buffer(JSON.stringify(policy)).toString('base64')
 
+        // Update that ID with the new policy
         var groupPolicyCreateOptions = {
             method: 'PUT',
             url: 'https://api.truevault.com/v1/groups/' + id,
@@ -247,12 +247,11 @@ module.exports = function(config) {
      * addUsersToGroup - Add users to the group.
      *
      * @param  {String}     id       ID of the policy.
-     * @param  {Array}      users    JSON of the Group Policy
+     * @param  {Array}      users    user_ids of users to be added
      * @param  {function}   callback function(error, policy_id)
      */
     tvModule.addUsersToGroup = function(id, users, callback) {
-        var policy_enc = new Buffer(JSON.stringify(policy)).toString('base64')
-
+        // PUT stringified user_id's
         var groupPolicyCreateOptions = {
             method: 'PUT',
             url: 'https://api.truevault.com/v1/groups/' + id,
@@ -260,7 +259,7 @@ module.exports = function(config) {
                 authorization: TV_AUTH_HEADER
             },
             formData: {
-                policy: policy_enc
+                user_ids: JSON.stringify(users)
             }
         };
 
@@ -275,12 +274,152 @@ module.exports = function(config) {
         });
     };
 
+
+    /**
+     * getAllGroups - list all groups.
+     *
+     * @param  {function} callback function(error, vaults)
+     */
+    tvModule.getAllGroups = function(callback) {
+        // Configure options for simple GET
+        var vaultCreateOptions = {
+            method: 'GET',
+            url: 'https://api.truevault.com/v1/groups',
+            headers: {
+                authorization: TV_AUTH_HEADER
+            }
+        };
+
+        request(vaultCreateOptions, function(error, response, body) {
+            if (error) return callback(Error(error), null);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), null);
+            }
+            return callback(null, bodyParsed.groups);
+        });
+    };
+
     // Section 4 - Schema Methods ==============================================
 
-    // Create Schema
-    // Delete Schema
-    // Update Schema
-    // Get Schema
+
+        /**
+         * createSchema - Create a new schema.
+         *
+         * @param  {String}     name     Name of the policy (must be unique).
+         * @param  {JSON}       policy   JSON of the Schema Policy
+         * @param  {function}   callback function(error, policy_id)
+         */
+        tvModule.createSchema = function(vault, schema, callback) {
+            var schema_enc = new Buffer(JSON.stringify(schema)).toString('base64')
+
+            var schemaPolicyCreateOptions = {
+                method: 'POST',
+                url: 'https://api.truevault.com/v1/' + vault + 'schemas',
+                headers: {
+                    authorization: TV_AUTH_HEADER
+                },
+                formData: {
+                    schema: schema_enc
+                }
+            };
+
+            request(schemaPolicyCreateOptions, function(error, response, body) {
+                if (error) return callback(Error(error), null);
+                var bodyParsed = JSON.parse(body);
+                if (bodyParsed.error) {
+                    return callback(Error(bodyParsed.error.message), null);
+                }
+                var policy_id = bodyParsed.schema.schema_id;
+                return callback(null, policy_id)
+            });
+        };
+
+        /**
+         * deleteSchema - Delete a schema.
+         *
+         * @param  {String}     id       Schema Policy ID.
+         * @param  {function}   callback function(error, success)
+         */
+        tvModule.deleteSchema = function(vault, id, callback) {
+            // Delete just the one
+            var schemaPolicyCreateOptions = {
+                method: 'DELETE',
+                url: 'https://api.truevault.com/v1/' + vault  + 'schemas/' + id,
+                headers: {
+                    authorization: TV_AUTH_HEADER
+                }
+            };
+
+            request(schemaPolicyCreateOptions, function(error, response, body) {
+                if (error) return callback(Error(error), false);
+                var bodyParsed = JSON.parse(body);
+                if (bodyParsed.error) {
+                    return callback(Error(bodyParsed.error.message), false);
+                }
+                return callback(null, true)
+            });
+        };
+
+        /**
+         * updateSchemaPolicy - Update a new schema policy
+         *
+         * @param  {String}     id       ID of the policy.
+         * @param  {JSON}       policy   JSON of the Schema Policy
+         * @param  {function}   callback function(error, policy_id)
+         */
+        tvModule.updateSchemaPolicy = function(vault, id, schema, callback) {
+            var schema_enc = new Buffer(JSON.stringify(schema)).toString('base64')
+
+            // Update that ID with the new policy
+            var schemaPolicyCreateOptions = {
+                method: 'PUT',
+                url: 'https://api.truevault.com/v1/' + vault  + 'schemas/' + id,
+                headers: {
+                    authorization: TV_AUTH_HEADER
+                },
+                formData: {
+                    schema: schema_enc
+                }
+            };
+
+            request(schemaPolicyCreateOptions, function(error, response, body) {
+                if (error) return callback(Error(error), null);
+                var bodyParsed = JSON.parse(body);
+                if (bodyParsed.error) {
+                    return callback(Error(bodyParsed.error.message), null);
+                }
+                var policy_id = bodyParsed.schema.schema_id;
+                return callback(null, policy_id)
+            });
+        };
+
+
+        /**
+         * getAllSchemas - list all schemas.
+         *
+         * @param  {string}     vault    Vault to look at
+         * @param  {function}   callback function(error, vaults)
+         */
+        tvModule.getAllSchemas = function(vault, callback) {
+            // Configure options for simple GET
+            var vaultCreateOptions = {
+                method: 'GET',
+                url: 'https://api.truevault.com/v1/' + vault + '/schemas',
+                headers: {
+                    authorization: TV_AUTH_HEADER
+                }
+            };
+
+            request(vaultCreateOptions, function(error, response, body) {
+                if (error) return callback(Error(error), null);
+                var bodyParsed = JSON.parse(body);
+                if (bodyParsed.error) {
+                    return callback(Error(bodyParsed.error.message), null);
+                }
+                return callback(null, bodyParsed.schemas);
+            });
+        };
 
     // Section 5 - Document Methods ============================================
 
