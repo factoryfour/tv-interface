@@ -277,9 +277,28 @@ module.exports = function(config) {
 
     // Section 4 - Schema Methods ==============================================
 
+    // Create Schema
+    // Delete Schema
+    // Update Schema
+    // Get Schema
+
     // Section 5 - Document Methods ============================================
 
-    // Section 6 - Search Methods ==============================================
+    // Create Document
+    // Update Document
+    // Delete Document
+    // Get Document
+
+    // Section 6 - Blob Methods ================================================
+
+    // Create Blob
+    // Delete Blob
+    // Get Blob
+    tvModule.createNewEmptyBlob = function(vault_id, callback) {
+        return callback(null, false);
+    }
+
+    // Section 7 - Search Methods ==============================================
 
     /**
      * search - Search for documents in a vault with a search option.
