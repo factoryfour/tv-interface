@@ -61,7 +61,6 @@ describe('Blob Methods', function() {
             should.not.exist(error);
             should.exist(results);
             var blobs = results;
-            console.log(results)
             var flag = false;
             for (blob in results) {
                 if (created_blob_id == blobs[blob].id) {
