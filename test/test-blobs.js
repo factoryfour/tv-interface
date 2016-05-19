@@ -60,13 +60,15 @@ describe('Blob Methods', function() {
         tvInterface.blobs.getAll(created_vault_id, function(error, results) {
             should.not.exist(error);
             should.exist(results);
-            var blobs = results.data.items;
+            var blobs = results;
+            console.log(results)
             var flag = false;
-            for (blob in blobs) {
+            for (blob in results) {
                 if (created_blob_id == blobs[blob].id) {
                     done();
                 }
             }
+
             flag.should.equal(true);
             done();
         });

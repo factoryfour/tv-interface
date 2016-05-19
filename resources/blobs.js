@@ -145,7 +145,36 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
             if (bodyParsed.error) {
                 return callback(Error(bodyParsed.error.message), false)
             }
-            return callback(null, bodyParsed);
+            return callback(null, bodyParsed.data.items);
+        });
+    }
+
+    /**
+     * getAll - List all blobs.
+     *
+     * @param  {string}     vault    Vault to list for
+     * @param  {function}   callback function(error, file)
+     */
+    tvModule.deleteAll = function(vault_id, callback) {
+        tvModule.getAll(vault_id, function(err, blobs) {
+            var tasks = [];
+            blobs.forEach(function(blob, index, arr) {
+                tasks.push(function(asyncCb) {
+                    tvModule.delete(vault_id, blob.id, function(err, success) {
+                        if (err) {
+                            asyncCb(err, null);
+                        } else if (!success) {
+                            asyncCb(new Error("Could not delete schema: " + blob.id), null);
+                        } else {
+                            asyncCb(null, blob.id);
+                        }
+                    });
+                });
+            });
+
+            async.parallel(tasks, function(err, results) {
+                callback(err, results, results.length == blobs.length);
+            });
         });
     }
 
