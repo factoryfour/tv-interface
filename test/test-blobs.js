@@ -5,8 +5,8 @@ var uuid = require('node-uuid');
 var fs = require('fs');
 
 var TV_ADMIN_VAULT_ID = config.TV_ADMIN_VAULT_ID;
-var TV_ORG_SCHEMA_ID = config.TV_ORG_SCHEMA_ID
-var tvInterface = require(root + '/TruevaultInterface.js')(config);
+var TV_ORG_SCHEMA_ID = config.TV_ORG_SCHEMA_ID;
+var tvInterface = require(root + '/tvInterface.js')(config);
 
 var testFile = fs.createReadStream(__dirname + "/sample-files/Fusiform_Logo.png")
 
