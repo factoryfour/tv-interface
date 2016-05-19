@@ -6,7 +6,7 @@ var uuid = require('node-uuid');
 var TV_ADMIN_VAULT_ID = config.TV_ADMIN_VAULT_ID;
 var TV_ORG_SCHEMA_ID = config.TV_ORG_SCHEMA_ID
 var tvInterface = require(root + '/TruevaultInterface.js')(config);
-var org_policy_gen = require(root + '/prebuilt/org_group_policy_base.js');
+var org_policy_gen = require(root + '/test/sample-files/test_group_policy_base.js');
 
 describe('Group Methods', function() {
 
