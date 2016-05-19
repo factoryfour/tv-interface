@@ -4,8 +4,8 @@ var config = require(root + '/config.js');
 var uuid = require('node-uuid');
 
 var TV_ADMIN_VAULT_ID = config.TV_ADMIN_VAULT_ID;
-var TV_ORG_SCHEMA_ID = config.TV_ORG_SCHEMA_ID
-var tvInterface = require(root + '/TruevaultInterface.js')(config);
+var TV_ORG_SCHEMA_ID = config.TV_ORG_SCHEMA_ID;
+var tvInterface = require(root + '/tvInterface.js')(config);
 
 var org_schema = require(root + '/test/sample-files/test_schema.js');
 
