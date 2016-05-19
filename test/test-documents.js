@@ -54,6 +54,7 @@ describe('Document Methods', function() {
 
     it('documentTests-01 - should list all documents', function(done) {
         tvInterface.documents.getAll(created_vault_id, function(error, results) {
+            console.log(results);
             should.not.exist(error);
             should.exist(results);
             for (schema in results) {
@@ -77,6 +78,7 @@ describe('Document Methods', function() {
         tvInterface.documents.getAll(created_vault_id, function(error, results) {
             should.not.exist(error);
             should.exist(results);
+            console.log(results);
             var flag = false;
             for (document in results) {
                 if (created_document_id == results[document].id) {

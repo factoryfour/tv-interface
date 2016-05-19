@@ -41,7 +41,16 @@ describe('Document Methods', function() {
                     })
                 });
             });
-
+            for (var i = 0; i < 3; i++) {
+                tasks.push(function(callback) {
+                    tvInterface.documents.createEmpty(created_vault_id, null, function(error, results) {
+                        should.not.exist(error);
+                        should.exist(results);
+                        console.log("Created test document.")
+                        callback(null, results);
+                    })
+                });
+            }
             async.parallel(tasks, function(err, results) {
                 // All tasks are done now
                 done();
@@ -59,8 +68,16 @@ describe('Document Methods', function() {
         });
     });
 
-    it('deleteTest-01 - should delete all schemas', function(done) {
+    it('deleteTests-01 - should delete all schemas', function(done) {
         tvInterface.schemas.deleteAll(created_vault_id, function(error, results, success) {
+            should.not.exist(error);
+            success.should.equal(true);
+            done();
+        });
+    });
+
+    it('deleteTests-02 - should delete all documents', function(done) {
+        tvInterface.documents.deleteAll(created_vault_id, function(error, results, success) {
             should.not.exist(error);
             success.should.equal(true);
             done();

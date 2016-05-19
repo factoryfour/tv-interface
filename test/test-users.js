@@ -10,7 +10,7 @@ var tvInterface = require(root + '/TruevaultInterface.js')(config);
 describe('User Methods', function() {
 
     it('userTests-01 - should list all users', function(done) {
-        tvInterface.getAllUsers(function(error, results) {
+        tvInterface.users.getAll(function(error, results) {
             should.not.exist(error);
             should.exist(results);
             for (user in results) {
@@ -21,10 +21,10 @@ describe('User Methods', function() {
     });
 
     it('userTests-02 - should generate access keys for a user', function(done) {
-        tvInterface.getAllUsers(function(error, results) {
+        tvInterface.users.getAll(function(error, results) {
             should.not.exist(error);
             should.exist(results);
-            tvInterface.accessKeys(results[0].id,function(error, access,secret){
+            tvInterface.users.getAccessKeyPair(results[0].id,function(error, access,secret){
                 should.not.exist(error);
                 should.exist(access);
                 should.exist(secret);

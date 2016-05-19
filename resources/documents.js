@@ -26,7 +26,7 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
             },
             formData: {
                 document: doc_enc,
-                schema_id: schema
+                schema_id: schema || ""
             }
         };
 
@@ -165,6 +165,37 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
             return callback(null, bodyParsed.data.items)
         });
     };
+
+
+    /**
+     * tvModule - description
+     *
+     * @param  {type} vault_id description
+     * @param  {type} callback description
+     */
+    tvModule.deleteAll = function(vault_id, callback) {
+        tvModule.getAll(vault_id, function(err, documents) {
+            var tasks = [];
+            documents.forEach(function(document, index, arr) {
+                tasks.push(function(asyncCb) {
+                    tvModule.delete(vault_id, document.id, function(err, success) {
+                        if (err) {
+                            asyncCb(err, null);
+                        } else if (!success) {
+                            asyncCb(new Error("Could not delete schema: " + document.id), null);
+                        } else {
+                            asyncCb(null, document.id);
+                        }
+                    });
+                });
+            });
+
+            async.parallel(tasks, function(err, results) {
+                callback(err, results, results.length == documents.length);
+            });
+        });
+
+    }
 
     return tvModule;
 

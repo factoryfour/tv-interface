@@ -68,7 +68,7 @@ describe('Group Methods', function() {
     });
 
     it('groupTests-06 - should be able to add users to policy', function(done) {
-        tvInterface.getAllUsers(function(error, results) {
+        tvInterface.users.getAll(function(error, results) {
             var id = results[0].user_id;
             var idB = results[1].user_id;
             tvInterface.groups.addUsers(created_group_id,[id,idB], function(error, results) {
