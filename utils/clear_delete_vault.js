@@ -17,9 +17,8 @@ if (process.argv.length == 3) {
      * CHANGE THESE VALUES TO CLEAR A VAULT WITHOUT A COMMAND LINE ARG
      */
     vault_ids = [
-        "07c8995c-9c05-46d1-854e-6becaaeea869",
-        "551e97cf-f4ce-4deb-94e9-49009bbbf800",
-        "2624142b-f44f-4248-a2b2-f5ee21d37bcd"];
+        "86fd1208-5e67-417c-89b1-632179bd8b8c",
+        "5cf3a3f9-5586-4bf8-92a7-07013c3b0217"];
 }
 
 vault_ids.forEach(function(vault_id, index, arr) {
