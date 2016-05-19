@@ -13,7 +13,7 @@ describe('Vault Methods', function() {
     var created_vault_id;
 
     it('vaultTests-01 - should be able to list all vaults', function(done) {
-        tvInterface.getAllVaults(function(error, results) {
+        tvInterface.vaults.getAll(function(error, results) {
             should.not.exist(error);
             should.exist(results);
             for (vault in results) {
@@ -24,7 +24,7 @@ describe('Vault Methods', function() {
     });
 
     it('vaultTests-02 - should be able to create a vault', function(done) {
-        tvInterface.createVault(vaultName, function(error, results) {
+        tvInterface.vaults.create(vaultName, function(error, results) {
             should.not.exist(error);
             should.exist(results);
             created_vault_id = results;
@@ -33,7 +33,7 @@ describe('Vault Methods', function() {
     });
 
     it('vaultTests-03 - should have created a vault', function(done) {
-        tvInterface.getAllVaults(function(error, results) {
+        tvInterface.vaults.getAll(function(error, results) {
             should.not.exist(error);
             should.exist(results);
             var flag = false;
@@ -48,7 +48,7 @@ describe('Vault Methods', function() {
     });
 
     it('vaultTests-04 - should be able to handle duplicate error gracefully', function(done) {
-        tvInterface.createVault(vaultName, function(error, results) {
+        tvInterface.vaults.create(vaultName, function(error, results) {
             should.exist(error);
             should.not.exist(results);
             done();
@@ -56,7 +56,7 @@ describe('Vault Methods', function() {
     });
 
     it('vaultTests-05 - should be able to delete an empty vault', function(done) {
-        tvInterface.deleteVault(created_vault_id, function(error, results) {
+        tvInterface.vaults.delete(created_vault_id, function(error, results) {
             should.not.exist(error);
             should.exist(results);
             done();
@@ -64,7 +64,7 @@ describe('Vault Methods', function() {
     });
 
     it('vaultTests-06 - should have deleted the vault', function(done) {
-        tvInterface.getAllVaults(function(error, results) {
+        tvInterface.vaults.getAll(function(error, results) {
             should.not.exist(error);
             should.exist(results);
             var flag = false;

@@ -20,7 +20,7 @@ describe('Blob Methods', function() {
 
     before(function(done) {
     // runs before all tests in this block
-        tvInterface.createVault(vaultName, function(error, results) {
+        tvInterface.vaults.create(vaultName, function(error, results) {
             should.not.exist(error);
             created_vault_id = results;
             console.log("Created a vault for testing.")
@@ -30,7 +30,7 @@ describe('Blob Methods', function() {
 
     after(function(done) {
     // runs before all tests in this block
-        tvInterface.deleteVault(created_vault_id, function(error, results) {
+        tvInterface.vaults.delete(created_vault_id, function(error, results) {
             should.not.exist(error);
             created_vault_id = results;
             console.log("Deleted test vault.")

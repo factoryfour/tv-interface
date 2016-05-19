@@ -16,7 +16,7 @@ describe('Group Methods', function() {
     var policy = org_policy_gen(uuid.v4())
 
     it('groupTests-01 - should list all groups', function(done) {
-        tvInterface.getAllGroups(function(error, results) {
+        tvInterface.groups.getAll(function(error, results) {
             should.not.exist(error);
             should.exist(results);
             for (group in results) {
@@ -28,7 +28,7 @@ describe('Group Methods', function() {
 
 
     it('groupTests-02 - should be able to create a group', function(done) {
-        tvInterface.createGroup(groupName,policy, function(error, results) {
+        tvInterface.groups.create(groupName,policy, function(error, results) {
             should.not.exist(error);
             should.exist(results);
             created_group_id = results;
@@ -37,7 +37,7 @@ describe('Group Methods', function() {
     });
 
     it('groupTests-03 - should have created a group', function(done) {
-        tvInterface.getAllGroups(function(error, results) {
+        tvInterface.groups.getAll(function(error, results) {
             should.not.exist(error);
             should.exist(results);
             var flag = false;
@@ -52,7 +52,7 @@ describe('Group Methods', function() {
     });
 
     it('groupTests-04 - should be able to handle duplicate error gracefully', function(done) {
-        tvInterface.createGroup(groupName, policy, function(error, results) {
+        tvInterface.groups.create(groupName, policy, function(error, results) {
             should.exist(error);
             should.not.exist(results);
             done();
@@ -60,7 +60,7 @@ describe('Group Methods', function() {
     });
 
     it('groupTests-05 - should be able to update group policy', function(done) {
-        tvInterface.updateGroupPolicy( created_group_id, policy, function(error, results) {
+        tvInterface.groups.updatePolicy( created_group_id, policy, function(error, results) {
             should.not.exist(error);
             should.exist(results);
             done();
@@ -71,7 +71,7 @@ describe('Group Methods', function() {
         tvInterface.getAllUsers(function(error, results) {
             var id = results[0].user_id;
             var idB = results[1].user_id;
-            tvInterface.addUsersToGroup(created_group_id,[id,idB], function(error, results) {
+            tvInterface.groups.addUsers(created_group_id,[id,idB], function(error, results) {
                 should.not.exist(error);
                 should.exist(results);
                 done();
@@ -80,7 +80,7 @@ describe('Group Methods', function() {
     });
 
     it('groupTests-07 - should be able to delete a group', function(done) {
-        tvInterface.deleteGroup(created_group_id, function(error, results) {
+        tvInterface.groups.delete(created_group_id, function(error, results) {
             should.not.exist(error);
             should.exist(results);
             done();
@@ -88,7 +88,7 @@ describe('Group Methods', function() {
     });
 
     it('groupTests-07 - should have deleted the group', function(done) {
-        tvInterface.getAllGroups(function(error, results) {
+        tvInterface.groups.getAll(function(error, results) {
             should.not.exist(error);
             should.exist(results);
             var flag = false;
