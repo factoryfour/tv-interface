@@ -104,7 +104,7 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
      *
      * @param  {String}     id       ID of the policy.
      * @param  {Array}      users    user_ids of users to be added
-     * @param  {function}   callback function(error, policy_id)
+     * @param  {function}   callback function(error, success)
      */
     tvModule.addUsers = function(id, users, callback) {
         // PUT stringified user_id's
@@ -120,13 +120,12 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
         };
 
         request(options, function(error, response, body) {
-            if (error) return callback(Error(error), null);
+            if (error) return callback(Error(error), false);
             var bodyParsed = JSON.parse(body);
             if (bodyParsed.error) {
-                return callback(Error(bodyParsed.error.message), null);
+                return callback(Error(bodyParsed.error.message), false);
             }
-            var policy_id = bodyParsed.group.group_id;
-            return callback(null, policy_id)
+            return callback(null, true)
         });
     };
 
