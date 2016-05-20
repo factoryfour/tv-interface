@@ -1,6 +1,6 @@
 {
   "name": "tv-interface",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "A simple interface for working with TrueVault",
   "main": "tvInterface.js",
   "scripts": {
