@@ -35,8 +35,10 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
             // Parse and decode all documents
             var bodyParsed = JSON.parse(body);
             var docs = bodyParsed.data.documents;
-            for (doc in docs) {
-                docs[doc].document = JSON.parse(new Buffer(docs[doc].document, 'base64').toString('ascii'))
+            if (search_option.full_document) {
+                for (doc in docs) {
+                    docs[doc].document = JSON.parse(new Buffer(docs[doc].document, 'base64').toString('ascii'))
+                }
             }
             return callback(null, bodyParsed.data.info, docs)
         });
