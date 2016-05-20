@@ -38,7 +38,7 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
             for (doc in docs) {
                 docs[doc].document = JSON.parse(new Buffer(docs[doc].document, 'base64').toString('ascii'))
             }
-            return callback(null, info, docs)
+            return callback(null, bodyParsed.info, docs)
         });
     };
 
