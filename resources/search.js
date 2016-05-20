@@ -11,7 +11,7 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
      *
      * @param  {String}     vault_id      vault to search in
      * @param  {JSON}       search_option search option formatted a la Truevault
-     * @param  {function}   callback      function(error, documents)
+     * @param  {function}   callback      function(error, info, documents)
      */
     tvModule.runQuery = function(vault_id, search_option, callback) {
         // Base 64 Encode Search Option
@@ -38,7 +38,7 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
             for (doc in docs) {
                 docs[doc].document = JSON.parse(new Buffer(docs[doc].document, 'base64').toString('ascii'))
             }
-            return callback(null, docs)
+            return callback(null, info, docs)
         });
     };
 
