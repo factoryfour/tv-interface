@@ -137,7 +137,7 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
         // Configure options for simple GET
         var options = {
             method: 'GET',
-            url: 'https://api.truevault.com/v1/groups',
+            url: 'https://api.truevault.com/v1/groups?full=true',
             headers: {
                 authorization: TV_AUTH_HEADER
             }
