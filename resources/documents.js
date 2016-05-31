@@ -131,6 +131,9 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
 
         request(options, function(error, response, body) {
             if (error) return callback(Error(error), false);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), false);
+            }
             var result = JSON.parse(new Buffer(body, 'base64').toString('ascii'));
             return callback(null, result)
         });
