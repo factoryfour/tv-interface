@@ -4,7 +4,7 @@ var async = require('async');
 
 var TV_ADMIN_VAULT_ID = config.TV_ADMIN_VAULT_ID;
 var TV_ORG_SCHEMA_ID = config.TV_ORG_SCHEMA_ID
-var tvInterface = require(root + '/TruevaultInterface.js')(config);
+var tvInterface = require(root + '/tvInterface.js')(config);
 
 
 
@@ -17,8 +17,7 @@ if (process.argv.length == 3) {
      * CHANGE THESE VALUES TO CLEAR A VAULT WITHOUT A COMMAND LINE ARG
      */
     vault_ids = [
-        "86fd1208-5e67-417c-89b1-632179bd8b8c",
-        "5cf3a3f9-5586-4bf8-92a7-07013c3b0217"];
+        "e578afbc-98d7-4f96-af23-032c85b71616"];
 }
 
 vault_ids.forEach(function(vault_id, index, arr) {
