@@ -87,6 +87,36 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
         })
     };
 
+    /**
+     * updateUserAttributes - update a users attribues.
+     *
+     * @param  {string}     user_id  id to create link for
+     * @param  {string}     attr     attributes to use
+     * @param  {function}   callback function(error, url)
+     */
+    tvModule.updateUserAttributes = function(user_id, attr, callback) {
+        // Configure options for simple GET
+        var doc_enc = new Buffer(JSON.stringify(attr)).toString('base64');
+        var options = {
+            method: 'PUT',
+            url: 'https://api.truevault.com/v1/users/' + user_id,
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
+                attributes: doc_enc
+            }
+        };
+
+        request(options, function(error, response, body) {
+            if (error) return callback(Error(error), false);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), false);
+            }
+            return callback(null, true)
+        });
+    };
 
     return tvModule;
 

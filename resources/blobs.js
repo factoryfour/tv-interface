@@ -178,6 +178,26 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
         });
     }
 
+    /**
+     * get - Get a blob from a file.
+     *
+     * @param  {string}     vault    Vault to get from
+     * @param  {string}     blob_id  Blob id to get
+     * @param  {function}   callback function(error, file)
+     */
+    tvModule.getPipable = function(vault, blob_id, callback) {
+        var options = {
+            method: 'GET',
+            url: 'https://api.truevault.com/v1/vaults/' + vault + '/blobs/' + blob_id,
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            encoding: null
+        };
+
+        var stream =  request(options);
+        return callback(null, stream)
+    }
 
     return tvModule;
 
