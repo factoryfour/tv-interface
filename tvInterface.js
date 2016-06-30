@@ -16,13 +16,14 @@ module.exports = function(config) {
     var tvModule = {};
 
     // Just import from resources
-    tvModule.schemas = require('./resources/schemas.js')(TV_API_KEY_ENC, TV_AUTH_HEADER);
-    tvModule.blobs = require('./resources/blobs.js')(TV_API_KEY_ENC, TV_AUTH_HEADER);
-    tvModule.documents = require('./resources/documents.js')(TV_API_KEY_ENC, TV_AUTH_HEADER);
-    tvModule.groups = require('./resources/groups.js')(TV_API_KEY_ENC, TV_AUTH_HEADER);
-    tvModule.vaults = require('./resources/vaults.js')(TV_API_KEY_ENC, TV_AUTH_HEADER);
-    tvModule.users = require('./resources/users.js')(TV_API_KEY_ENC, TV_AUTH_HEADER);
-    tvModule.search = require('./resources/search.js')(TV_API_KEY_ENC, TV_AUTH_HEADER);
+    tvModule.schemas        = require('./resources/schemas.js')(TV_API_KEY_ENC, TV_AUTH_HEADER);
+    tvModule.blobs          = require('./resources/blobs.js')(TV_API_KEY_ENC, TV_AUTH_HEADER);
+    tvModule.documents      = require('./resources/documents.js')(TV_API_KEY_ENC, TV_AUTH_HEADER);
+    tvModule.groups         = require('./resources/groups.js')(TV_API_KEY_ENC, TV_AUTH_HEADER);
+    tvModule.vaults         = require('./resources/vaults.js')(TV_API_KEY_ENC, TV_AUTH_HEADER);
+    tvModule.users          = require('./resources/users.js')(TV_API_KEY_ENC, TV_AUTH_HEADER);
+    tvModule.user_schemas   = require('./resources/user_schemas.js')(TV_API_KEY_ENC, TV_AUTH_HEADER, TV_ACCOUNT_ID);
+    tvModule.search         = require('./resources/search.js')(TV_API_KEY_ENC, TV_AUTH_HEADER);
 
     return tvModule;
 }

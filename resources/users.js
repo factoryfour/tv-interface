@@ -118,6 +118,35 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
         });
     };
 
+    /**
+     * updateUserAttributes - update a users attribues.
+     *
+     * @param  {string}     user_id  id to create link for
+     * @param  {function}   callback function(error, url)
+     */
+    tvModule.get = function(user_id, callback) {
+        // Configure options for simple GET
+        var options = {
+            method: 'GET',
+            url: 'https://api.truevault.com/v1/users/' + user_id + '?full=true',
+            headers: {
+                authorization: TV_AUTH_HEADER
+            }
+        };
+
+        request(options, function(error, response, body) {
+            if (error) return callback(Error(error), false);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), false);
+            }
+            var user = bodyParsed.user;
+            var attr_enc = user.attributes;
+            user.attributes = JSON.parse(new Buffer(attr_enc, 'base64').toString('ascii'))
+            return callback(null, user)
+        });
+    };
+
     return tvModule;
 
 }
