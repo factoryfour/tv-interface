@@ -3,7 +3,7 @@ var fs = require('fs')
 var async = require('async');
 
 module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
-    
+
     var tvModule = {};
 
     /**
@@ -123,10 +123,10 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
     };
 
     /**
-     * tvModule - description
+     * deleteAll - delete all the schemas in a vault
      *
-     * @param  {type} vault_id description
-     * @param  {type} callback description
+     * @param  {string} vault_id description
+     * @param  {function} callback function(error, success)
      */
     tvModule.deleteAll = function(vault_id, callback) {
         tvModule.getAll(vault_id, function(err, schemas) {
@@ -146,7 +146,7 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
             });
 
             async.parallel(tasks, function(err, results) {
-                callback(err, results, results.length == schemas.length);
+                callback(err, results.length == schemas.length);
             });
         });
 
