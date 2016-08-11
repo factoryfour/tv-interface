@@ -41,6 +41,41 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
     };
 
     /**
+     * createWithUsers - Create a new group and predefined user_ids.
+     *
+     * @param  {String}     name     Name of the policy (must be unique).
+     * @param  {JSON}       policy   JSON of the Group Policy
+     * @param  {array}      users    Array of user ID strings
+     * @param  {function}   callback function(error, policy_id)
+     */
+    tvModule.createWithUsers = function(name, policy, users, callback) {
+        var policy_enc = new Buffer(JSON.stringify(policy)).toString('base64')
+
+        var options = {
+            method: 'POST',
+            url: 'https://api.truevault.com/v1/groups',
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
+                name: name,
+                policy: policy_enc,
+                user_ids: users
+            }
+        };
+
+        request(options, function(error, response, body) {
+            if (error) return callback(Error(error), null);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), null);
+            }
+            var policy_id = bodyParsed.group.group_id;
+            return callback(null, policy_id)
+        });
+    };
+
+    /**
      * delete - Delete a group.
      *
      * @param  {String}     id       Group Policy ID.
