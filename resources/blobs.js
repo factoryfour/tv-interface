@@ -36,6 +36,43 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
         });
     }
 
+
+    /**
+     * create - Create a blob from a file.
+     *
+     * @param  {string}     vault    Vault to create in
+     * @param  {ReadStream} file     File to create blob for
+     * @param  {String}     fileName New name for file
+     * @param  {function}   callback function(error, blob_id)
+     */
+    tvModule.createNameMod = function(vault, fileN, fileName, callback) {
+        var options = {
+            method: 'POST',
+            url: 'https://api.truevault.com/v1/vaults/' + vault + '/blobs',
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
+                file: {
+                    value: fileN,
+                    options: {
+                        filename: fileName
+                    }
+                }
+            }
+        };
+
+        request(options, function(error, response, body) {
+            if (error) return callback(Error(error), null);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), null)
+            }
+            return callback(null, bodyParsed.blob_id)
+        });
+    }
+
+
     /**
      * createEmpty - Create an empty blob to overwrite.
      *
@@ -63,6 +100,42 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
             },
             formData: {
                 file: file
+            }
+        };
+
+        request(options, function(error, response, body) {
+            if (error) return callback(Error(error), false);
+            var bodyParsed = JSON.parse(body);
+            if (bodyParsed.error) {
+                return callback(Error(bodyParsed.error.message), false)
+            }
+            return callback(null, true)
+        });
+    }
+
+    /**
+     * create - Create a blob from a file.
+     *
+     * @param  {string}     vault    Vault to create in
+     * @param  {string}     blob_id  blob_id to update
+     * @param  {ReadStream} file     File to create blob for
+     * @param  {String}     fileName New name for file
+     * @param  {function}   callback function(error, success)
+     */
+    tvModule.updateNameMod = function(vault, blob_id, fileN, fileName, callback) {
+        var options = {
+            method: 'PUT',
+            url: 'https://api.truevault.com/v1/vaults/' + vault + '/blobs/' + blob_id,
+            headers: {
+                authorization: TV_AUTH_HEADER
+            },
+            formData: {
+                file: {
+                    value: fileN,
+                    options: {
+                        filename: fileName
+                    }
+                }
             }
         };
 
@@ -195,7 +268,7 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
             encoding: null
         };
 
-        var stream =  request(options);
+        var stream = request(options);
         return callback(null, stream)
     }
 

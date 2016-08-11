@@ -1,7 +1,3 @@
-var request = require('request');
-var fs = require('fs')
-var async = require('async');
-
 module.exports = function(config) {
 
     var TV_API_KEY = config.TV_API_KEY;
