@@ -43,7 +43,7 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
                 }
                 return callback(null, bodyParsed.data.info, docs)
             } else {
-                return callback(null, null, null);
+                return callback("Error in searching: " + JSON.stringify(body), null, null);
             }
         });
     };
