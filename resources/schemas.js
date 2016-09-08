@@ -146,7 +146,7 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
             });
 
             async.parallel(tasks, function(err, results) {
-                callback(err, results.length == schemas.length);
+                callback(err, results, results.length == schemas.length);
             });
         });
 
