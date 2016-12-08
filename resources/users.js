@@ -150,6 +150,27 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
 		});
 	};
 
+	/**
+	 * Delete - Delete a user.
+	 *
+	 * @param  {string}     user_id  id to delete for
+	 * @param  {function}   callback function(error, url)
+	 */
+	tvModule.delete = function(user_id, callback) {
+		var options = {
+			method: 'DELETE',
+			url: 'https://api.truevault.com/v1/users/' + user_id,
+			headers: {
+				authorization: TV_AUTH_HEADER
+			}
+		};
+
+		request(options, function(error, response, body) {
+			if (error) return callback(Error(error), false);
+			return callback(null, true)
+		});
+	};
+
 	return tvModule;
 
 }
