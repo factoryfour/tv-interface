@@ -143,7 +143,7 @@ module.exports = function(TV_API_KEY_ENC, TV_AUTH_HEADER) {
 			var user = bodyParsed.user;
 			var attr_enc = user.attributes;
 			if (!user.attributes) {
-				return callback(null, {});
+				return callback(null, user);
 			}
 			user.attributes = JSON.parse(new Buffer(attr_enc, 'base64').toString('ascii'))
 			return callback(null, user)
