@@ -34,3 +34,5 @@ config.js
 .node_repl_history
 
 personal-tests
+
+test.js
